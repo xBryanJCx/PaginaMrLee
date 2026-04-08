@@ -14,11 +14,26 @@ public static class SeedData
         var pwd = scope.ServiceProvider.GetRequiredService<PasswordService>();
         var cfg = scope.ServiceProvider.GetRequiredService<IConfiguration>();
 
+        await db.Database.ExecuteSqlRawAsync(@"
+IF COL_LENGTH('dbo.Users', 'MustChangePassword') IS NULL
+BEGIN
+    ALTER TABLE dbo.Users ADD MustChangePassword BIT NOT NULL CONSTRAINT DF_Users_MustChangePassword DEFAULT(0);
+END
+IF COL_LENGTH('dbo.Users', 'TemporaryPasswordIssuedUtc') IS NULL
+BEGIN
+    ALTER TABLE dbo.Users ADD TemporaryPasswordIssuedUtc DATETIME2 NULL;
+END");
+
         // Permissions
-        if (!await db.Permissions.AnyAsync())
+        var existingPermissionCodes = await db.Permissions.Select(p => p.Code).ToListAsync();
+        var missingPermissions = PermissionCatalog.All
+            .Where(code => !existingPermissionCodes.Contains(code))
+            .Select(code => new Permission { Code = code, Description = code })
+            .ToList();
+
+        if (missingPermissions.Count > 0)
         {
-            db.Permissions.AddRange(PermissionCatalog.All.Select(code =>
-                new Permission { Code = code, Description = code }));
+            db.Permissions.AddRange(missingPermissions);
             await db.SaveChangesAsync();
         }
 
@@ -39,11 +54,18 @@ public static class SeedData
 
         // Assign ALL permissions to Admin
         var admin = await db.Roles.FirstAsync(r => r.Name == "Administrador");
-        var adminHas = await db.RolePermissions.Where(rp => rp.RoleId == admin.Id).AnyAsync();
-        if (!adminHas)
+        var adminPermissionIds = await db.RolePermissions
+            .Where(rp => rp.RoleId == admin.Id)
+            .Select(rp => rp.PermissionId)
+            .ToListAsync();
+        var missingAdminPermissions = await db.Permissions
+            .Where(p => !adminPermissionIds.Contains(p.Id))
+            .Select(p => p.Id)
+            .ToListAsync();
+
+        if (missingAdminPermissions.Count > 0)
         {
-            var permIds = await db.Permissions.Select(p => p.Id).ToListAsync();
-            db.RolePermissions.AddRange(permIds.Select(pid => new RolePermission { RoleId = admin.Id, PermissionId = pid }));
+            db.RolePermissions.AddRange(missingAdminPermissions.Select(pid => new RolePermission { RoleId = admin.Id, PermissionId = pid }));
             await db.SaveChangesAsync();
         }
 

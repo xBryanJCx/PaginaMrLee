@@ -20,6 +20,10 @@ public class AppDbContext : DbContext
     public DbSet<OrderItem> OrderItems => Set<OrderItem>();
     public DbSet<OrderStatusHistory> OrderStatusHistory => Set<OrderStatusHistory>();
 
+    public DbSet<OperatingIncome> OperatingIncomes => Set<OperatingIncome>();
+    public DbSet<OperatingIncomeAttachment> OperatingIncomeAttachments => Set<OperatingIncomeAttachment>();
+    public DbSet<AccountingPeriod> AccountingPeriods => Set<AccountingPeriod>();
+
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);
@@ -47,6 +51,14 @@ public class AppDbContext : DbContext
             .HasIndex(o => o.TrackingNumber)
             .IsUnique();
 
+        modelBuilder.Entity<OperatingIncome>()
+            .HasIndex(i => i.Number)
+            .IsUnique();
+
+        modelBuilder.Entity<AccountingPeriod>()
+            .HasIndex(p => new { p.Year, p.Month })
+            .IsUnique();
+
         // Prevent cascade delete surprises
         modelBuilder.Entity<OrderItem>()
             .HasOne(i => i.Product)
@@ -59,5 +71,11 @@ public class AppDbContext : DbContext
             .WithMany(p => p.Movements)
             .HasForeignKey(m => m.ProductId)
             .OnDelete(DeleteBehavior.Restrict);
+
+        modelBuilder.Entity<OperatingIncomeAttachment>()
+            .HasOne(a => a.OperatingIncome)
+            .WithMany(i => i.Attachments)
+            .HasForeignKey(a => a.OperatingIncomeId)
+            .OnDelete(DeleteBehavior.Cascade);
     }
 }

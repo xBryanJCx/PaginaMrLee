@@ -2,7 +2,69 @@
     ViewData["Title"] = "Inicio";
 }
 
-<div class="p-4 bg-light rounded-3">
-  <h1 class="display-6">Sistema Mr Lee</h1>
-  <p class="lead mb-0">Módulos: seguimiento de pedidos, inventario y usuarios/accesos.</p>
+<div class="section-panel mb-4">
+    <div class="row align-items-center g-4">
+        <div class="col-lg-7">
+            <div class="text-uppercase text-primary fw-bold small mb-2">Mr Lee dashboard</div>
+            <h2 class="display-6 mb-3">Controla la operación diaria desde un solo lugar</h2>
+            <p class="lead mb-4">El sistema centraliza seguimiento de pedidos, movimientos de inventario, administración de usuarios y trazabilidad de acciones con una presentación visual alineada al template solicitado.</p>
+            <div class="d-flex flex-wrap gap-2">
+                <a class="btn btn-primary" asp-controller="Orders" asp-action="Index">Ver pedidos</a>
+                <a class="btn btn-outline-primary" asp-controller="Inventory" asp-action="Index">Explorar inventario</a>
+                <a class="btn btn-outline-secondary" asp-controller="OperatingIncome" asp-action="Index">Ver ingresos</a>
+            </div>
+        </div>
+        <div class="col-lg-5">
+            <img src="~/theme/img/about-1.jpg" class="img-fluid rounded-4 shadow-sm" alt="Panel Mr Lee" />
+        </div>
+    </div>
+</div>
+
+<div class="row g-4 mb-4">
+    <div class="col-md-6 col-xl-3">
+        <div class="home-stat">
+            <div class="stat-icon mb-3">01</div>
+            <h3 class="h5">Pedidos</h3>
+            <p class="mb-0">Consulta, crea y actualiza el estado de cada orden con su historial completo.</p>
+        </div>
+    </div>
+    <div class="col-md-6 col-xl-3">
+        <div class="home-stat">
+            <div class="stat-icon mb-3">02</div>
+            <h3 class="h5">Inventario</h3>
+            <p class="mb-0">Administra productos, existencias y movimientos con una vista operativa más clara.</p>
+        </div>
+    </div>
+    <div class="col-md-6 col-xl-3">
+        <div class="home-stat">
+            <div class="stat-icon mb-3">03</div>
+            <h3 class="h5">Ingresos</h3>
+            <p class="mb-0">Registra ventas y cobros, filtra por fechas, consulta resúmenes y exporta reportes.</p>
+        </div>
+    </div>
+    <div class="col-md-6 col-xl-3">
+        <div class="home-stat">
+            <div class="stat-icon mb-3">04</div>
+            <h3 class="h5">Usuarios</h3>
+            <p class="mb-0">Gestiona accesos, roles y contraseñas iniciales con navegación unificada.</p>
+        </div>
+    </div>
+</div>
+
+<div class="section-panel">
+    <div class="row g-4 align-items-center">
+        <div class="col-lg-6">
+            <img src="~/theme/img/about-2.jpg" class="img-fluid rounded-4 shadow-sm" alt="Operación" />
+        </div>
+        <div class="col-lg-6">
+            <div class="text-uppercase text-primary fw-bold small mb-2">Interfaz renovada</div>
+            <h3 class="display-6 mb-3">Estilo visual del template aplicado al proyecto</h3>
+            <p>Se integró una identidad gráfica inspirada en el template compartido: paleta cálida, tipografías decorativas para títulos, tarjetas elevadas, hero superior, formularios estilizados y tablas con apariencia consistente.</p>
+            <ul class="mb-0">
+                <li>Navegación superior y footer adaptados al sistema.</li>
+                <li>Diseño responsive para vistas administrativas.</li>
+                <li>Nuevo módulo de ingresos operativos con comprobantes, cierres y exportación CSV.</li>
+            </ul>
+        </div>
+    </div>
 </div>

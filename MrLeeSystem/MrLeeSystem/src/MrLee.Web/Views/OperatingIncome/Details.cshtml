@@ -1,0 +1,75 @@
+@model OperatingIncome
+@{
+    ViewData["Title"] = "Detalle de ingreso";
+}
+
+<div class="section-panel mb-4">
+    <div class="d-flex justify-content-between align-items-start flex-wrap gap-3">
+        <div>
+            <div class="text-uppercase text-primary fw-bold small">@Model.Number</div>
+            <h2 class="h4 mb-2">@Model.SourceName</h2>
+            <div class="text-muted">@Model.IncomeDate.ToString("dd/MM/yyyy") · @Model.Type · @Model.Category</div>
+        </div>
+        <div class="text-end">
+            <div class="display-6">₡ @Model.Amount.ToString("N2")</div>
+            @if (Model.IsVoided)
+            {
+                <span class="badge bg-danger">Anulado</span>
+            }
+            else
+            {
+                <span class="badge bg-success">Activo</span>
+            }
+        </div>
+    </div>
+</div>
+
+<div class="row g-4">
+    <div class="col-lg-7">
+        <div class="section-panel h-100">
+            <h3 class="h5 mb-3">Información</h3>
+            <dl class="row mb-0">
+                <dt class="col-sm-4">Referencia</dt>
+                <dd class="col-sm-8">@Model.Reference</dd>
+                <dt class="col-sm-4">Descripción</dt>
+                <dd class="col-sm-8">@Model.Description</dd>
+                <dt class="col-sm-4">Creado por</dt>
+                <dd class="col-sm-8">@Model.CreatedByEmail</dd>
+                <dt class="col-sm-4">Actualizado</dt>
+                <dd class="col-sm-8">@(Model.UpdatedAtUtc?.ToLocalTime().ToString("dd/MM/yyyy HH:mm") ?? "-")</dd>
+            </dl>
+        </div>
+    </div>
+    <div class="col-lg-5">
+        <div class="section-panel h-100">
+            <h3 class="h5 mb-3">Comprobantes</h3>
+            @if (Model.Attachments.Any())
+            {
+                <ul class="mb-0 ps-3">
+                    @foreach (var file in Model.Attachments.OrderByDescending(x => x.CreatedAtUtc))
+                    {
+                        <li><a href="@file.RelativePath" target="_blank">@file.OriginalFileName</a></li>
+                    }
+                </ul>
+            }
+            else
+            {
+                <div class="text-muted">No hay comprobantes adjuntos.</div>
+            }
+        </div>
+    </div>
+</div>
+
+<div class="mt-4 d-flex gap-2 flex-wrap">
+    <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-primary">Editar</a>
+    <a asp-action="Trace" asp-route-id="@Model.Id" class="btn btn-outline-dark">Ver trazabilidad</a>
+    @if (!Model.IsVoided)
+    {
+        <form asp-action="Void" asp-route-id="@Model.Id" method="post" class="d-inline-flex gap-2">
+            @Html.AntiForgeryToken()
+            <input type="text" name="reason" class="form-control" placeholder="Motivo de anulación" />
+            <button class="btn btn-outline-danger">Anular</button>
+        </form>
+    }
+    <a asp-action="Index" class="btn btn-outline-secondary">Volver</a>
+</div>

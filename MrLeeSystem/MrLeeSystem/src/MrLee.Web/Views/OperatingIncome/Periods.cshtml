@@ -1,0 +1,73 @@
+@model List<AccountingPeriod>
+@{
+    ViewData["Title"] = "Cierres contables";
+}
+
+<div class="section-panel mb-4">
+    <h3 class="h5 mb-3">Cerrar período</h3>
+    <form asp-action="ClosePeriod" method="post" class="row g-3 align-items-end">
+        @Html.AntiForgeryToken()
+        <div class="col-md-3">
+            <label class="form-label">Año</label>
+            <input type="number" name="Year" class="form-control" value="@DateTime.Today.Year" min="2020" max="2100" />
+        </div>
+        <div class="col-md-3">
+            <label class="form-label">Mes</label>
+            <input type="number" name="Month" class="form-control" value="@DateTime.Today.Month" min="1" max="12" />
+        </div>
+        <div class="col-md-4">
+            <label class="form-label">Notas</label>
+            <input type="text" name="Notes" class="form-control" placeholder="Cierre mensual" />
+        </div>
+        <div class="col-md-2 d-grid">
+            <button class="btn btn-primary">Cerrar</button>
+        </div>
+    </form>
+</div>
+
+<div class="section-panel">
+    <div class="table-responsive">
+        <table class="table table-hover align-middle">
+            <thead>
+                <tr>
+                    <th>Período</th>
+                    <th>Estado</th>
+                    <th>Cerrado por</th>
+                    <th>Fecha</th>
+                    <th>Notas</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+            @foreach (var p in Model)
+            {
+                <tr>
+                    <td>@p.Year-@p.Month.ToString("00")</td>
+                    <td>
+                        @if (p.Status == AccountingPeriodStatus.Cerrado)
+                        {
+                            <span class="badge bg-danger">Cerrado</span>
+                        }
+                        else
+                        {
+                            <span class="badge bg-success">Abierto</span>
+                        }
+                    </td>
+                    <td>@p.ClosedByEmail</td>
+                    <td>@(p.ClosedAtUtc?.ToLocalTime().ToString("dd/MM/yyyy HH:mm") ?? "-")</td>
+                    <td>@p.Notes</td>
+                    <td>
+                        @if (p.Status == AccountingPeriodStatus.Cerrado)
+                        {
+                            <form asp-action="ReopenPeriod" asp-route-id="@p.Id" method="post">
+                                @Html.AntiForgeryToken()
+                                <button class="btn btn-sm btn-outline-secondary">Reabrir</button>
+                            </form>
+                        }
+                    </td>
+                </tr>
+            }
+            </tbody>
+        </table>
+    </div>
+</div>

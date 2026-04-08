@@ -15,10 +15,15 @@ public static class PermissionCatalog
     public const string ORD_MANAGE = "ORD.MANAGE";
     public const string ORD_STATUS = "ORD.STATUS";
 
+    public const string ING_VIEW = "ING.VIEW";
+    public const string ING_MANAGE = "ING.MANAGE";
+    public const string ING_AUDIT = "ING.AUDIT";
+
     public static readonly string[] All = new[]
     {
         USERS_VIEW, USERS_MANAGE, USERS_AUDIT,
         INV_VIEW, INV_MANAGE, INV_MOVEMENTS,
-        ORD_VIEW, ORD_MANAGE, ORD_STATUS
+        ORD_VIEW, ORD_MANAGE, ORD_STATUS,
+        ING_VIEW, ING_MANAGE, ING_AUDIT
     };
 }

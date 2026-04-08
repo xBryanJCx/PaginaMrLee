@@ -1,0 +1,39 @@
+@model List<ActionLog>
+@{
+    ViewData["Title"] = "Trazabilidad de ingresos";
+    var income = ViewBag.Income as OperatingIncome;
+}
+
+<div class="section-panel mb-4">
+    <div class="text-uppercase text-primary fw-bold small">Registro auditado</div>
+    <h2 class="h4 mb-1">@income?.Number</h2>
+    <div class="text-muted">@income?.SourceName · ₡ @((income?.Amount ?? 0).ToString("N2"))</div>
+</div>
+
+<div class="section-panel">
+    <div class="table-responsive">
+        <table class="table table-striped align-middle">
+            <thead>
+                <tr>
+                    <th>Fecha</th>
+                    <th>Usuario</th>
+                    <th>Acción</th>
+                    <th>Entidad</th>
+                    <th>Detalle</th>
+                </tr>
+            </thead>
+            <tbody>
+            @foreach (var log in Model)
+            {
+                <tr>
+                    <td>@log.AtUtc.ToLocalTime().ToString("dd/MM/yyyy HH:mm")</td>
+                    <td>@log.ActorEmail</td>
+                    <td>@log.Action</td>
+                    <td>@log.Entity</td>
+                    <td><code>@log.DetailJson</code></td>
+                </tr>
+            }
+            </tbody>
+        </table>
+    </div>
+</div>

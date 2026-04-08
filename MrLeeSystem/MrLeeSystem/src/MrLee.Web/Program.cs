@@ -4,6 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using MrLee.Web.Data;
 using MrLee.Web.Security;
 using MrLee.Web.Services;
+using MrLee.Web.Models;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -11,6 +12,7 @@ builder.Services.AddControllersWithViews()
     .AddRazorRuntimeCompilation();
 
 builder.Services.AddHttpContextAccessor();
+builder.Services.Configure<SmtpSettings>(builder.Configuration.GetSection("Smtp"));
 
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
@@ -41,6 +43,8 @@ builder.Services.AddScoped<PasswordService>();
 builder.Services.AddScoped<AuditService>();
 builder.Services.AddScoped<InventoryService>();
 builder.Services.AddScoped<OrderService>();
+builder.Services.AddScoped<OperatingIncomeService>();
+builder.Services.AddScoped<EmailService>();
 
 var app = builder.Build();
 
@@ -64,6 +68,32 @@ app.UseStaticFiles();
 app.UseRouting();
 
 app.UseAuthentication();
+
+app.Use(async (context, next) =>
+{
+    if (context.User?.Identity?.IsAuthenticated == true)
+    {
+        var mustChange = string.Equals(context.User.FindFirst("MustChangePassword")?.Value, "true", StringComparison.OrdinalIgnoreCase);
+        var path = context.Request.Path.Value ?? "";
+        var allow = path.StartsWith("/Account/ChangeTemporaryPassword", StringComparison.OrdinalIgnoreCase)
+                    || path.StartsWith("/Account/Logout", StringComparison.OrdinalIgnoreCase)
+                    || path.StartsWith("/Account/AccessDenied", StringComparison.OrdinalIgnoreCase)
+                    || path.StartsWith("/css", StringComparison.OrdinalIgnoreCase)
+                    || path.StartsWith("/js", StringComparison.OrdinalIgnoreCase)
+                    || path.StartsWith("/img", StringComparison.OrdinalIgnoreCase)
+                    || path.StartsWith("/theme", StringComparison.OrdinalIgnoreCase)
+                    || path.StartsWith("/lib", StringComparison.OrdinalIgnoreCase);
+
+        if (mustChange && !allow)
+        {
+            context.Response.Redirect("/Account/ChangeTemporaryPassword");
+            return;
+        }
+    }
+
+    await next();
+});
+
 app.UseAuthorization();
 
 app.MapControllerRoute(

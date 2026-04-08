@@ -7,28 +7,28 @@
 <p class="text-muted">Estado actual: <strong>@Model.CurrentStatus</strong></p>
 
 <form method="post">
-  @Html.AntiForgeryToken()
-  <input type="hidden" asp-for="OrderId" />
-  <input type="hidden" asp-for="CurrentStatus" />
+    @Html.AntiForgeryToken()
+    <input type="hidden" asp-for="OrderId" />
+    <input type="hidden" asp-for="CurrentStatus" />
 
-  <div asp-validation-summary="All" class="text-danger"></div>
+    <div asp-validation-summary="All" class="text-danger"></div>
 
-  <div class="row">
-    <div class="col-md-4 mb-3">
-      <label class="form-label">Nuevo estado</label>
-      <select asp-for="NewStatus" class="form-select">
-        @foreach (MrLee.Web.Models.OrderStatus s in Enum.GetValues(typeof(MrLee.Web.Models.OrderStatus)))
-        {
-          <option value="@s">@s</option>
-        }
-      </select>
+    <div class="row">
+        <div class="col-md-4 mb-3">
+            <label class="form-label">Nuevo estado</label>
+            <select asp-for="NewStatus" class="form-select">
+                @foreach (MrLee.Web.Models.OrderStatus s in Enum.GetValues(typeof(MrLee.Web.Models.OrderStatus)))
+                {
+                    <option value="@s">@s</option>
+                }
+            </select>
+        </div>
+        <div class="col-md-8 mb-3">
+            <label class="form-label">Comentario</label>
+            <input asp-for="Comment" class="form-control" placeholder="Opcional (ej: 'En ruta con repartidor Juan')" />
+        </div>
     </div>
-    <div class="col-md-8 mb-3">
-      <label class="form-label">Comentario</label>
-      <input asp-for="Comment" class="form-control" placeholder="Opcional (ej: 'En ruta con repartidor Juan')" />
-    </div>
-  </div>
 
-  <button class="btn btn-primary" type="submit">Guardar</button>
-  <a class="btn btn-outline-secondary" asp-action="Details" asp-route-id="@Model.OrderId">Volver</a>
+    <button class="btn btn-primary" type="submit">Guardar</button>
+    <a class="btn btn-outline-secondary" asp-action="Details" asp-route-id="@Model.OrderId">Volver</a>
 </form>

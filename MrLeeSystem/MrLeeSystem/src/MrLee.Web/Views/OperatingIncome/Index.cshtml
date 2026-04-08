@@ -1,0 +1,106 @@
+@model List<OperatingIncome>
+@{
+    ViewData["Title"] = "Ingresos operativos";
+}
+
+<div class="section-panel mb-4">
+    <form method="get" class="row g-3 align-items-end">
+        <div class="col-md-3">
+            <label class="form-label">Desde</label>
+            <input type="date" class="form-control" name="from" value="@ViewBag.From" />
+        </div>
+        <div class="col-md-3">
+            <label class="form-label">Hasta</label>
+            <input type="date" class="form-control" name="to" value="@ViewBag.To" />
+        </div>
+        <div class="col-md-3">
+            <label class="form-label">Buscar</label>
+            <input type="text" class="form-control" name="q" value="@ViewBag.Query" placeholder="Número, origen, referencia..." />
+        </div>
+        <div class="col-md-2">
+            <div class="form-check mt-4">
+                <input class="form-check-input" type="checkbox" name="includeVoided" value="true" @(ViewBag.IncludeVoided ? "checked" : null) />
+                <label class="form-check-label">Incluir anulados</label>
+            </div>
+        </div>
+        <div class="col-md-1 d-grid">
+            <button class="btn btn-info text-white">🔍 Filtrar</button>
+        </div>
+    </form>
+
+    <div class="d-flex flex-wrap gap-2 mt-4">
+        <a asp-action="Create" class="btn btn-success">&#43; Nuevo ingreso</a>
+        <a asp-action="Summary" class="btn btn-primary">📊 Resumen diario</a>
+        <a asp-action="Periods" class="btn btn-outline-secondary">📅 Períodos</a>
+        <a asp-action="Export" asp-route-from="@ViewBag.From" asp-route-to="@ViewBag.To" class="btn btn-outline-success">⬇ Exportar detalle CSV</a>
+        <a asp-action="Export" asp-route-format="summary" asp-route-from="@ViewBag.From" asp-route-to="@ViewBag.To" class="btn btn-outline-success">⬇ Exportar resumen CSV</a>
+    </div>
+</div>
+
+<div class="row g-4 mb-4">
+    <div class="col-md-4">
+        <div class="home-stat">
+            <div class="h6 text-muted">Registros</div>
+            <div class="display-6">@Model.Count</div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="home-stat">
+            <div class="h6 text-muted">Monto visible</div>
+            <div class="display-6">₡ @(((decimal)ViewBag.Total).ToString("N2"))</div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="home-stat">
+            <div class="h6 text-muted">Requerimientos cubiertos</div>
+            <div class="mb-0">RF-ING-001 al RF-ING-008</div>
+        </div>
+    </div>
+</div>
+
+<div class="section-panel">
+    <div class="table-responsive">
+        <table class="table table-hover align-middle">
+            <thead>
+                <tr>
+                    <th>Número</th>
+                    <th>Fecha</th>
+                    <th>Tipo</th>
+                    <th>Origen</th>
+                    <th>Referencia</th>
+                    <th class="text-end">Monto</th>
+                    <th>Estado</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model)
+                {
+                    <tr>
+                        <td>@item.Number</td>
+                        <td>@item.IncomeDate.ToString("dd/MM/yyyy")</td>
+                        <td>@item.Type</td>
+                        <td>@item.SourceName</td>
+                        <td>@item.Reference</td>
+                        <td class="text-end">₡ @item.Amount.ToString("N2")</td>
+                        <td>
+                            @if (item.IsVoided)
+                            {
+                                <span class="badge bg-danger">Anulado</span>
+                            }
+                            else
+                            {
+                                <span class="badge bg-success">Activo</span>
+                            }
+                        </td>
+                        <td class="text-nowrap">
+                            <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-sm btn-primary">Ver</a>
+                            <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-sm btn-warning text-dark">✏️ Editar</a>
+                            <a asp-action="Trace" asp-route-id="@item.Id" class="btn btn-sm btn-outline-secondary">📋 Traza</a>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>

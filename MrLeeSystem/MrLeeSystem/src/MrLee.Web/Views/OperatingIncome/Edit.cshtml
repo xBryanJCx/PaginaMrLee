@@ -1,0 +1,22 @@
+@model OperatingIncomeEditVm
+@{
+    ViewData["Title"] = "Editar ingreso operativo";
+    ViewData["FormAction"] = "Edit";
+    ViewData["FormButton"] = "Guardar cambios";
+    var attachments = ViewBag.Attachments as List<OperatingIncomeAttachment> ?? new();
+}
+
+<partial name="_Form" model="Model" />
+
+@if (attachments.Any())
+{
+    <div class="section-panel mt-4">
+        <h3 class="h5 mb-3">Comprobantes adjuntos</h3>
+        <ul class="mb-0">
+            @foreach (var item in attachments)
+            {
+                <li><a href="@item.RelativePath" target="_blank">@item.OriginalFileName</a> <span class="text-muted">(@(Math.Round(item.SizeBytes / 1024m, 1)) KB)</span></li>
+            }
+        </ul>
+    </div>
+}

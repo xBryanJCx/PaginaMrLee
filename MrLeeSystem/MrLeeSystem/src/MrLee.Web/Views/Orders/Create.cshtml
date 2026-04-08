@@ -7,63 +7,63 @@
 <h2 class="h4">Crear pedido</h2>
 
 <form method="post">
-  @Html.AntiForgeryToken()
-  <div asp-validation-summary="All" class="text-danger"></div>
+    @Html.AntiForgeryToken()
+    <div asp-validation-summary="All" class="text-danger"></div>
 
-  <div class="row">
-    <div class="col-md-4 mb-3">
-      <label class="form-label">Cliente</label>
-      <input asp-for="CustomerName" class="form-control" />
-      <span asp-validation-for="CustomerName" class="text-danger"></span>
+    <div class="row">
+        <div class="col-md-4 mb-3">
+            <label class="form-label">Cliente</label>
+            <input asp-for="CustomerName" class="form-control" />
+            <span asp-validation-for="CustomerName" class="text-danger"></span>
+        </div>
+        <div class="col-md-4 mb-3">
+            <label class="form-label">Teléfono</label>
+            <input asp-for="CustomerPhone" class="form-control" />
+            <span asp-validation-for="CustomerPhone" class="text-danger"></span>
+        </div>
+        <div class="col-md-4 mb-3">
+            <label class="form-label">Dirección</label>
+            <input asp-for="DeliveryAddress" class="form-control" />
+            <span asp-validation-for="DeliveryAddress" class="text-danger"></span>
+        </div>
     </div>
-    <div class="col-md-4 mb-3">
-      <label class="form-label">Teléfono</label>
-      <input asp-for="CustomerPhone" class="form-control" />
-      <span asp-validation-for="CustomerPhone" class="text-danger"></span>
+
+    <div class="mb-3">
+        <label class="form-label">Notas / observaciones</label>
+        <textarea asp-for="Notes" class="form-control" rows="2"></textarea>
     </div>
-    <div class="col-md-4 mb-3">
-      <label class="form-label">Dirección</label>
-      <input asp-for="DeliveryAddress" class="form-control" />
-      <span asp-validation-for="DeliveryAddress" class="text-danger"></span>
+
+    <h3 class="h6 mt-4">Productos (hasta 5 líneas)</h3>
+    <div class="table-responsive">
+        <table class="table table-sm align-middle">
+            <thead>
+                <tr>
+                    <th style="width: 60%;">Producto</th>
+                    <th style="width: 20%;">Cantidad</th>
+                </tr>
+            </thead>
+            <tbody>
+                @for (int i = 0; i < Model.Items.Count; i++)
+                {
+                    <tr>
+                        <td>
+                            <select asp-for="Items[i].ProductId" class="form-select">
+                                <option value="">(Seleccione)</option>
+                                @foreach (var p in products)
+                                {
+                                    <option value="@p.Id">@p.Name (@p.Sku)</option>
+                                }
+                            </select>
+                        </td>
+                        <td>
+                            <input asp-for="Items[i].Quantity" class="form-control" />
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
     </div>
-  </div>
 
-  <div class="mb-3">
-    <label class="form-label">Notas / observaciones</label>
-    <textarea asp-for="Notes" class="form-control" rows="2"></textarea>
-  </div>
-
-  <h3 class="h6 mt-4">Productos (hasta 5 líneas)</h3>
-  <div class="table-responsive">
-    <table class="table table-sm align-middle">
-      <thead>
-        <tr>
-          <th style="width: 60%;">Producto</th>
-          <th style="width: 20%;">Cantidad</th>
-        </tr>
-      </thead>
-      <tbody>
-      @for (int i = 0; i < Model.Items.Count; i++)
-      {
-        <tr>
-          <td>
-            <select asp-for="Items[i].ProductId" class="form-select">
-              <option value="">(Seleccione)</option>
-              @foreach (var p in products)
-              {
-                <option value="@p.Id">@p.Name (@p.Sku)</option>
-              }
-            </select>
-          </td>
-          <td>
-            <input asp-for="Items[i].Quantity" class="form-control" />
-          </td>
-        </tr>
-      }
-      </tbody>
-    </table>
-  </div>
-
-  <button class="btn btn-primary" type="submit">Guardar</button>
-  <a class="btn btn-outline-secondary" asp-action="Index">Cancelar</a>
+    <button class="btn btn-primary" type="submit">Guardar</button>
+    <a class="btn btn-outline-secondary" asp-action="Index">Cancelar</a>
 </form>

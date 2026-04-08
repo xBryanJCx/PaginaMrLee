@@ -1,0 +1,51 @@
+@model List<OperatingIncomeSummaryRowVm>
+@{
+    ViewData["Title"] = "Resumen diario de ingresos";
+}
+
+<div class="section-panel mb-4">
+    <form method="get" class="row g-3 align-items-end">
+        <div class="col-md-4">
+            <label class="form-label">Desde</label>
+            <input type="date" class="form-control" name="from" value="@ViewBag.From" />
+        </div>
+        <div class="col-md-4">
+            <label class="form-label">Hasta</label>
+            <input type="date" class="form-control" name="to" value="@ViewBag.To" />
+        </div>
+        <div class="col-md-4 d-grid">
+            <button class="btn btn-primary">Actualizar resumen</button>
+        </div>
+    </form>
+</div>
+
+<div class="section-panel">
+    <div class="table-responsive">
+        <table class="table table-striped align-middle">
+            <thead>
+                <tr>
+                    <th>Fecha</th>
+                    <th class="text-end">Registros</th>
+                    <th class="text-end">Monto</th>
+                </tr>
+            </thead>
+            <tbody>
+            @foreach (var row in Model)
+            {
+                <tr>
+                    <td>@row.Date.ToString("dd/MM/yyyy")</td>
+                    <td class="text-end">@row.Count</td>
+                    <td class="text-end">₡ @row.Amount.ToString("N2")</td>
+                </tr>
+            }
+            </tbody>
+            <tfoot>
+                <tr>
+                    <th>Total</th>
+                    <th></th>
+                    <th class="text-end">₡ @(((decimal)ViewBag.GrandTotal).ToString("N2"))</th>
+                </tr>
+            </tfoot>
+        </table>
+    </div>
+</div>
