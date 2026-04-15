@@ -170,14 +170,40 @@ public class UsersController : Controller
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Delete(int id)
     {
+        var currentUserId = User.GetUserId();
+        var currentUserEmail = User.GetEmail();
+
+        if (currentUserId == id)
+        {
+            TempData["Error"] = "No puedes eliminar tu propio usuario mientras tienes una sesion activa.";
+            return RedirectToAction(nameof(Index));
+        }
+
         var user = await _db.Users.FirstOrDefaultAsync(u => u.Id == id);
         if (user == null) return NotFound();
 
-        _db.Users.Remove(user);
-        await _db.SaveChangesAsync();
+        try
+        {
+            await using var tx = await _db.Database.BeginTransactionAsync();
 
-        await _audit.LogAsync(User.GetUserId(), User.GetEmail(), "USER.DELETE", "AppUser", user.Id.ToString(),
-            new { user.Email });
+            await _db.ActionLogs
+                .Where(log => log.ActorUserId == user.Id)
+                .ExecuteUpdateAsync(setters => setters.SetProperty(log => log.ActorUserId, (int?)null));
+
+            _db.Users.Remove(user);
+            await _db.SaveChangesAsync();
+
+            await _audit.LogAsync(currentUserId, currentUserEmail, "USER.DELETE", "AppUser", user.Id.ToString(),
+                new { user.Email });
+
+            await tx.CommitAsync();
+
+            TempData["Msg"] = "Usuario eliminado correctamente.";
+        }
+        catch (DbUpdateException)
+        {
+            TempData["Error"] = "No se pudo eliminar el usuario porque todavia tiene informacion relacionada en el sistema.";
+        }
 
         return RedirectToAction(nameof(Index));
     }

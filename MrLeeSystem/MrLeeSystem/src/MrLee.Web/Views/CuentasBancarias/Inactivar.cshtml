@@ -1,0 +1,32 @@
+﻿@model MrLee.Web.Models.InactivarCuentaVm
+@{
+    ViewData["Title"] = "Inactivar cuenta";
+}
+<div class="row justify-content-center">
+    <div class="col-lg-5">
+        <div class="section-panel">
+            <h5 class="text-danger mb-3">⛔ Inactivar cuenta bancaria</h5>
+            <form asp-action="Inactivar" method="post">
+                @Html.AntiForgeryToken()
+                <input type="hidden" asp-for="CuentaId" />
+                <input type="hidden" asp-for="EmpleadoId" />
+                <div asp-validation-summary="All" class="alert alert-danger mb-3"></div>
+                <div class="mb-4">
+                    <label class="form-label fw-medium">Motivo <span class="text-danger">*</span></label>
+                    <textarea asp-for="Motivo" class="form-control" rows="3"></textarea>
+                    <span asp-validation-for="Motivo" class="text-danger small"></span>
+                </div>
+                <div class="d-flex gap-2 justify-content-end">
+                    <a asp-action="Index" asp-route-empleadoId="@Model.EmpleadoId" class="btn btn-outline-secondary">Cancelar</a>
+                    <button type="submit" class="btn btn-danger">Confirmar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+
+}

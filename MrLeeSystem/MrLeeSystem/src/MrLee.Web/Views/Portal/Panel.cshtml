@@ -1,0 +1,53 @@
+﻿@model MrLee.Web.Models.Cliente
+@{
+    ViewData["Title"] = "Mi panel";
+    Layout = "~/Views/Portal/_LayoutPortal.cshtml";
+}
+<div class="container py-4">
+    <div class="row g-4">
+        <div class="col-lg-4">
+            <div class="portal-card p-4 text-center">
+                <div class="portal-avatar mb-3">@Model.Nombre[0]@Model.Apellido[0]</div>
+                <h5 class="mb-1">@Model.Nombre @Model.Apellido</h5>
+                <div class="text-muted small mb-2">@Model.Email</div>
+                @if (!Model.EmailVerificado)
+                {
+                    <div class="alert alert-warning small py-2">⚠️ Correo no verificado — revisá tu bandeja.</div>
+                }
+                <div class="d-grid gap-2 mt-3">
+                    <a asp-action="Perfil" class="btn btn-warning text-dark">✏️ Editar perfil</a>
+                    <a asp-action="Preferencias" class="btn btn-outline-primary">🔔 Notificaciones</a>
+                    <a asp-action="MisPedidos" class="btn btn-primary">📦 Mis pedidos</a>
+                    <a asp-action="DesactivarCuenta" class="btn btn-outline-danger">⛔ Desactivar cuenta</a>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-8">
+            <div class="portal-card p-4 mb-4">
+                <h5 class="mb-3" style="color:var(--primary);">📦 Últimos pedidos</h5>
+                <p class="text-muted small mb-3">Aquí verás tus últimas compras.</p>
+                <a asp-action="MisPedidos" class="btn btn-primary">Ver todos mis pedidos</a>
+            </div>
+            <div class="portal-card p-4">
+                <h5 class="mb-3" style="color:var(--primary);">📍 Dirección de entrega</h5>
+                @{
+                    var dir = Model.Direcciones.FirstOrDefault(d => d.EsPrincipal);
+                }
+                @if (dir != null)
+                {
+                    <p class="mb-1">@dir.Provincia, @dir.Canton, @dir.Distrito</p>
+                    <p class="text-muted small">@dir.Direccion</p>
+                }
+                else
+                {
+                    <p class="text-muted small">No tenés dirección registrada.</p>
+                }
+                <a asp-action="Perfil" class="btn btn-outline-info">✏️ Actualizar dirección</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+@* ── PERFIL ── *@
+@* Guardar como Views/Portal/Perfil.cshtml *@

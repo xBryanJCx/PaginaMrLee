@@ -1,4 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 using MrLee.Web.Data;
 using MrLee.Web.Models;
 

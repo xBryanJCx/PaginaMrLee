@@ -1,39 +1,143 @@
+@using System.Text.Json
+@using System.Text.RegularExpressions
 @model List<ActionLog>
 @{
-    ViewData["Title"] = "Trazabilidad de ingresos";
+    ViewData["Title"] = "Trazabilidad del ingreso";
     var income = ViewBag.Income as OperatingIncome;
+
+    string HumanizeKey(string key)
+    {
+        if (string.IsNullOrWhiteSpace(key))
+        {
+            return "Detalle";
+        }
+
+        var normalized = key.Replace("_", " ").Replace(".", " / ");
+        normalized = Regex.Replace(normalized, "([a-z])([A-Z])", "$1 $2");
+        normalized = normalized.Trim();
+        return char.ToUpperInvariant(normalized[0]) + normalized[1..];
+    }
+
+    string HumanizeAction(string? action)
+    {
+        var normalized = action?.Trim().ToUpperInvariant();
+        return normalized switch
+        {
+            "ING.CREATE" or "OPERATINGINCOME.CREATE" or "OPERATINGINCOME.CREATED" => "Registro creado",
+            "ING.UPDATE" or "OPERATINGINCOME.UPDATE" or "OPERATINGINCOME.UPDATED" => "Registro actualizado",
+            "ING.VOID" or "OPERATINGINCOME.VOID" or "OPERATINGINCOME.VOIDED" => "Registro anulado",
+            "ING.ATTACH" or "OPERATINGINCOME.ATTACHMENT_ADDED" => "Comprobante agregado",
+            "ING.DETACH" or "OPERATINGINCOME.ATTACHMENT_REMOVED" => "Comprobante eliminado",
+            _ => HumanizeKey(action ?? "")
+        };
+    }
+
+    string FormatElement(JsonElement element)
+    {
+        return element.ValueKind switch
+        {
+            JsonValueKind.String => element.GetString() ?? "",
+            JsonValueKind.Number => element.ToString(),
+            JsonValueKind.True => "Si",
+            JsonValueKind.False => "No",
+            JsonValueKind.Null => "Sin dato",
+            _ => element.ToString()
+        };
+    }
+
+    List<KeyValuePair<string, string>> Flatten(JsonElement element, string prefix = "")
+    {
+        var result = new List<KeyValuePair<string, string>>();
+
+        if (element.ValueKind == JsonValueKind.Object)
+        {
+            foreach (var property in element.EnumerateObject())
+            {
+                var key = string.IsNullOrWhiteSpace(prefix) ? property.Name : $"{prefix} / {property.Name}";
+                if (property.Value.ValueKind == JsonValueKind.Object)
+                {
+                    result.AddRange(Flatten(property.Value, key));
+                }
+                else if (property.Value.ValueKind == JsonValueKind.Array)
+                {
+                    var values = property.Value.EnumerateArray().Select(FormatElement).ToList();
+                    result.Add(new KeyValuePair<string, string>(HumanizeKey(key), values.Count == 0 ? "Sin datos" : string.Join(", ", values)));
+                }
+                else
+                {
+                    result.Add(new KeyValuePair<string, string>(HumanizeKey(key), FormatElement(property.Value)));
+                }
+            }
+
+            return result;
+        }
+
+        result.Add(new KeyValuePair<string, string>(HumanizeKey(prefix), FormatElement(element)));
+        return result;
+    }
 }
 
-<div class="section-panel mb-4">
-    <div class="text-uppercase text-primary fw-bold small">Registro auditado</div>
-    <h2 class="h4 mb-1">@income?.Number</h2>
-    <div class="text-muted">@income?.SourceName · ₡ @((income?.Amount ?? 0).ToString("N2"))</div>
-</div>
+<section class="section-panel mb-4">
+    <div class="app-eyebrow mb-2">Historial de acciones</div>
+    <h2 class="h3 mb-2">@income?.Number</h2>
+    <div class="app-page-copy">@(income?.SourceName ?? "Ingreso operativo") &middot; &#8353; @((income?.Amount ?? 0).ToString("N2"))</div>
+</section>
 
-<div class="section-panel">
-    <div class="table-responsive">
-        <table class="table table-striped align-middle">
-            <thead>
-                <tr>
-                    <th>Fecha</th>
-                    <th>Usuario</th>
-                    <th>Acción</th>
-                    <th>Entidad</th>
-                    <th>Detalle</th>
-                </tr>
-            </thead>
-            <tbody>
+<section class="section-panel">
+    @if (Model.Any())
+    {
+        <div class="trace-list">
             @foreach (var log in Model)
             {
-                <tr>
-                    <td>@log.AtUtc.ToLocalTime().ToString("dd/MM/yyyy HH:mm")</td>
-                    <td>@log.ActorEmail</td>
-                    <td>@log.Action</td>
-                    <td>@log.Entity</td>
-                    <td><code>@log.DetailJson</code></td>
-                </tr>
+                List<KeyValuePair<string, string>> details;
+                string? rawDetail = null;
+
+                try
+                {
+                    using var document = JsonDocument.Parse(string.IsNullOrWhiteSpace(log.DetailJson) ? "{}" : log.DetailJson);
+                    details = Flatten(document.RootElement);
+                }
+                catch
+                {
+                    details = new List<KeyValuePair<string, string>>();
+                    rawDetail = string.IsNullOrWhiteSpace(log.DetailJson) ? null : log.DetailJson;
+                }
+
+                <article class="trace-entry">
+                    <div class="trace-entry__top">
+                        <div>
+                            <div class="trace-entry__title">@HumanizeAction(log.Action)</div>
+                            <div class="trace-entry__actor">@log.ActorEmail &middot; @log.Entity @log.EntityId</div>
+                        </div>
+                        <div class="trace-entry__meta">@log.AtUtc.ToLocalTime().ToString("dd/MM/yyyy HH:mm")</div>
+                    </div>
+
+                    @if (details.Any())
+                    {
+                        <div class="trace-entry__details">
+                            @foreach (var item in details)
+                            {
+                                <div class="trace-entry__detail">
+                                    <div class="trace-entry__detail-key">@item.Key</div>
+                                    <div class="trace-entry__detail-value">@item.Value</div>
+                                </div>
+                            }
+                        </div>
+                    }
+                    else if (!string.IsNullOrWhiteSpace(rawDetail))
+                    {
+                        <pre class="trace-entry__raw">@rawDetail</pre>
+                    }
+                </article>
             }
-            </tbody>
-        </table>
-    </div>
-</div>
+        </div>
+    }
+    else
+    {
+        <partial name="_EmptyMessage" model='new EmptyMessageVm
+        {
+            Title = "Sin eventos de trazabilidad",
+            Message = "Todavia no hay movimientos auditados para este ingreso."
+        }' />
+    }
+</section>

@@ -1,0 +1,81 @@
+﻿@model MrLee.Web.Models.IncapacidadFormVm
+@{
+    var esEdicion = Model.IncapacidadId.HasValue;
+    ViewData["Title"] = esEdicion ? "Editar incapacidad" : "Nueva incapacidad";
+}
+<div class="row justify-content-center">
+    <div class="col-lg-8">
+        <div class="section-panel">
+            <h5 class="mb-1">@Model.NombreEmpleado</h5>
+            <p class="text-muted small mb-4">@ViewData["Title"]</p>
+
+            <form asp-action="@(esEdicion ? "Editar" : "Crear")" method="post">
+                @Html.AntiForgeryToken()
+                @if (esEdicion)
+                {
+                    <input type="hidden" asp-for="IncapacidadId" />
+                }
+                <input type="hidden" asp-for="EmpleadoId" />
+                <input type="hidden" asp-for="NombreEmpleado" />
+
+                <div asp-validation-summary="All" class="alert alert-danger mb-3"></div>
+
+                <div class="row g-3 mb-3">
+                    <div class="col-md-6">
+                        <label class="form-label fw-medium">Fecha inicio <span class="text-danger">*</span></label>
+                        <input asp-for="FechaInicio" class="form-control" type="date" />
+                        <span asp-validation-for="FechaInicio" class="text-danger small"></span>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label fw-medium">Fecha fin <span class="text-danger">*</span></label>
+                        <input asp-for="FechaFin" class="form-control" type="date" />
+                        <span asp-validation-for="FechaFin" class="text-danger small"></span>
+                    </div>
+                    <div class="col-md-8">
+                        <label class="form-label fw-medium">Centro médico <span class="text-danger">*</span></label>
+                        <input asp-for="CentroMedico" class="form-control" placeholder="Ej: CCSS Heredia" />
+                        <span asp-validation-for="CentroMedico" class="text-danger small"></span>
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label fw-medium">Número de orden</label>
+                        <input asp-for="NumeroOrden" class="form-control" placeholder="Opcional" />
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label fw-medium">Tipo de documento</label>
+                        <select asp-for="TipoDocumento" class="form-select"
+                                asp-items="Html.GetEnumSelectList<MrLee.Web.Models.TipoDocumentoIncapacidad>()"></select>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label fw-medium">Estado</label>
+                        <select asp-for="Estado" class="form-select"
+                                asp-items="Html.GetEnumSelectList<MrLee.Web.Models.EstadoIncapacidad>()"></select>
+                    </div>
+                    <div class="col-12">
+                        <label class="form-label fw-medium">Diagnóstico <span class="text-danger">*</span></label>
+                        <textarea asp-for="Diagnostico" class="form-control" rows="2" maxlength="500"></textarea>
+                        <span asp-validation-for="Diagnostico" class="text-danger small"></span>
+                    </div>
+                    <div class="col-12">
+                        <label class="form-label fw-medium">URL del documento adjunto</label>
+                        <input asp-for="DocumentoUrl" class="form-control" placeholder="https://... o ruta relativa" />
+                    </div>
+                    <div class="col-12">
+                        <label class="form-label fw-medium">Observaciones</label>
+                        <textarea asp-for="Observaciones" class="form-control" rows="2" maxlength="500"></textarea>
+                    </div>
+                </div>
+
+                <div class="d-flex gap-2 justify-content-end">
+                    <a asp-action="Index" asp-route-empleadoId="@Model.EmpleadoId" class="btn btn-outline-secondary">Cancelar</a>
+                    <button type="submit" class="btn btn-success">💾 Guardar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+
+}

@@ -1,0 +1,122 @@
+﻿@model MrLee.Web.Models.RegistroClienteVm
+@{
+    ViewData["Title"] = "Crear cuenta";
+    Layout = "~/Views/Portal/_LayoutPortal.cshtml";
+}
+<div class="portal-auth-shell">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-xl-9 col-lg-10">
+                <div class="portal-card portal-register-card overflow-hidden">
+                    <div class="portal-register-accent"></div>
+                    <div class="p-4 p-lg-5">
+                        <div class="portal-auth-brand text-center mb-4">
+                            <div class="portal-auth-logo-wrap">
+                                <img src="~/img/logo.jpeg" class="portal-auth-logo" alt="Mr Lee" />
+                            </div>
+                            <div class="portal-auth-eyebrow">Portal de clientes</div>
+                            <h1 class="portal-auth-title mt-3 mb-2">Crear cuenta</h1>
+                            <p class="portal-auth-subtitle mb-2">Abrí tu acceso para consultar pedidos, guardar tus datos y administrar tu cuenta con facilidad.</p>
+                            <p class="portal-auth-switch mb-0">¿Ya tenés cuenta? <a asp-action="Login">Iniciá sesión</a></p>
+                        </div>
+
+                        <form asp-action="Registro" method="post" class="portal-register-form">
+                            @Html.AntiForgeryToken()
+                            <div asp-validation-summary="All" class="alert alert-danger portal-validation-summary mb-4"></div>
+
+                            <div class="portal-form-section-title">Datos personales</div>
+                            <div class="row g-3 mb-4">
+                                <div class="col-md-6">
+                                    <label class="form-label fw-medium">Nombre <span class="text-danger">*</span></label>
+                                    <input asp-for="Nombre" class="form-control" placeholder="Tu nombre" />
+                                    <span asp-validation-for="Nombre" class="text-danger small"></span>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label fw-medium">Apellido <span class="text-danger">*</span></label>
+                                    <input asp-for="Apellido" class="form-control" placeholder="Tu apellido" />
+                                    <span asp-validation-for="Apellido" class="text-danger small"></span>
+                                </div>
+                                <div class="col-12">
+                                    <label class="form-label fw-medium">Correo electrónico <span class="text-danger">*</span></label>
+                                    <input asp-for="Email" class="form-control" type="email" placeholder="vos@correo.com" />
+                                    <span asp-validation-for="Email" class="text-danger small"></span>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label fw-medium">Contraseña <span class="text-danger">*</span></label>
+                                    <input asp-for="Password" class="form-control" type="password" placeholder="********" />
+                                    <div class="form-text portal-form-hint">Mínimo 8 caracteres, con mayúscula, minúscula, número y símbolo.</div>
+                                    <span asp-validation-for="Password" class="text-danger small"></span>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label fw-medium">Confirmar contraseña <span class="text-danger">*</span></label>
+                                    <input asp-for="PasswordConf" class="form-control" type="password" placeholder="Repetí tu contraseña" />
+                                    <span asp-validation-for="PasswordConf" class="text-danger small"></span>
+                                </div>
+                            </div>
+
+                            <div class="portal-form-section-title">Información de contacto</div>
+                            <div class="row g-3 mb-4">
+                                <div class="col-md-4">
+                                    <label class="form-label fw-medium">Tipo ID <span class="text-danger">*</span></label>
+                                    <select asp-for="TipoIdentificacion" class="form-select"
+                                            asp-items="Html.GetEnumSelectList<MrLee.Web.Models.TipoIdentificacionCliente>()"></select>
+                                </div>
+                                <div class="col-md-8">
+                                    <label class="form-label fw-medium">Número de identificación <span class="text-danger">*</span></label>
+                                    <input asp-for="Identificacion" class="form-control" placeholder="Sin guiones" />
+                                    <span asp-validation-for="Identificacion" class="text-danger small"></span>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label fw-medium">Teléfono <span class="text-danger">*</span></label>
+                                    <input asp-for="Telefono" class="form-control" placeholder="8888-0000" />
+                                    <span asp-validation-for="Telefono" class="text-danger small"></span>
+                                </div>
+                            </div>
+
+                            <div class="portal-terms-box mb-4">
+                                <div class="form-check">
+                                    <input asp-for="AceptaTerminos" class="form-check-input" type="checkbox" />
+                                    <label class="form-check-label small">
+                                        Acepto los <a href="#" data-bs-toggle="modal" data-bs-target="#modalTerminos">términos y condiciones</a>
+                                        <span class="text-danger">*</span>
+                                    </label>
+                                </div>
+                                <div class="portal-check-note">Necesitamos esta confirmación para habilitar tu cuenta de cliente.</div>
+                                <span asp-validation-for="AceptaTerminos" class="text-danger small d-block mt-2"></span>
+                            </div>
+
+                            <button type="submit" class="btn btn-primary w-100 py-2 portal-register-submit">Crear mi cuenta</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal términos -->
+<div class="modal fade" id="modalTerminos" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Términos y condiciones</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body small">
+                <p>Al crear una cuenta en Mr Lee aceptás que tus datos personales serán utilizados exclusivamente para gestionar tus pedidos y comunicarte información relacionada con el servicio. No compartimos tu información con terceros.</p>
+                <p>Sos responsable de mantener la confidencialidad de tu contraseña. Mr Lee no será responsable por accesos no autorizados derivados del uso inadecuado de tus credenciales.</p>
+                <p>Podés solicitar la eliminación de tu cuenta en cualquier momento desde la sección de configuración.</p>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-primary" data-bs-dismiss="modal">Entendido</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+
+}

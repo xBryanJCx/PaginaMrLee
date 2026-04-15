@@ -1,6 +1,6 @@
 # Sistema Mr Lee
 
-Este ZIP incluye un proyecto **ASP.NET Core MVC (net8.0)** con **arquitectura MVC**, **EF Core (SQL Server)**, autenticación por **cookies**, control de acceso por **roles/permisos**, y los 3 módulos solicitados:
+Este ZIP incluye un proyecto **ASP.NET Core MVC (net8.0)** con **arquitectura MVC**, **EF Core (SQL Server)**, autenticación por **cookies**, control de acceso por **roles/permisos**, y los 4 módulos solicitados:
 
 - **Seguimiento de pedidos**: crear pedido, número único, consultar, actualizar estado y ver historial/timeline.
 
@@ -8,7 +8,9 @@ Este ZIP incluye un proyecto **ASP.NET Core MVC (net8.0)** con **arquitectura MV
 
 - **Usuarios y accesos**: CRUD de usuarios, roles/permisos, activar/desactivar, reset de contraseña y bitácora.
 
+- **Ingresos operativos**: registrar ingresos por ventas/cobros/otros, editar y anular, filtrar por fechas, ver resumen diario, exportar CSV, cerrar períodos contables y adjuntar comprobantes.
 
+> Los requerimientos se tomaron del documento `Requerimientos.pdf` 
 
 ---
 
@@ -54,6 +56,9 @@ Se leen de `appsettings.json`:
 
 - Pedidos: `/Orders`
 - Inventario: `/Inventory`
+- Ingresos operativos: `/OperatingIncome`
+- Resumen de ingresos: `/OperatingIncome/Summary`
+- Cierres contables: `/OperatingIncome/Periods`
 - Usuarios: `/Users`
 - Bitácora: `/Users/Audit`
 - Login: `/Account/Login`
@@ -65,6 +70,7 @@ Se leen de `appsettings.json`:
 - **Passwords**: PBKDF2 (SHA256, 100k iteraciones) almacenado en `Users.PasswordHash`.
 - **Bloqueo por intentos fallidos**: al 5to intento, bloqueo 15 minutos (requerimiento SEGR-006).
 - **Bitácora**: tabla `ActionLogs`.
+- **Comprobantes de ingresos**: se guardan en `wwwroot/uploads/operating-income/`.
 
 ---
 
@@ -75,3 +81,39 @@ Se leen de `appsettings.json`:
 - `Database/01_MrLeeDb.sql` (script SQL Server)
 - `wwwroot/img/logo.jpeg` (logo)
 
+
+
+## Recuperación de contraseña por correo
+
+Se agregó la opción **¿Olvidó su contraseña?** en el login.
+
+Flujo:
+1. El usuario escribe su correo.
+2. El sistema genera una contraseña temporal.
+3. La contraseña temporal se envía por correo usando SMTP de Brevo.
+4. Al iniciar sesión, el usuario debe cambiarla obligatoriamente.
+
+### Configuración SMTP Brevo
+
+Complete la contraseña SMTP en `src/MrLee.Web/appsettings.json` o use variables de entorno:
+
+```json
+"Smtp": {
+  "Host": "smtp-relay.brevo.com",
+  "Port": 587,
+  "Username": "",
+  "Password": "COLOQUE_AQUI_SU_CLAVE_BREVO",
+  "FromEmail": "",
+  "FromName": "Mr Lee System",
+  "EnableSsl": true
+}
+```
+
+Variables de entorno equivalentes:
+- `Smtp__Host`
+- `Smtp__Port`
+- `Smtp__Username`
+- `Smtp__Password`
+- `Smtp__FromEmail`
+- `Smtp__FromName`
+- `Smtp__EnableSsl`

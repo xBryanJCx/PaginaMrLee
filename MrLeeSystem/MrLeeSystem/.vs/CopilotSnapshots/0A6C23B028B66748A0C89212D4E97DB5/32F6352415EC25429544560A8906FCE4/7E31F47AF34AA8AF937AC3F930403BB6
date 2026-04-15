@@ -1,0 +1,318 @@
+﻿:root {
+    --primary: #EAA636;
+    --secondary: #545454;
+    --light: #FDF5EB;
+    --dark: #1E1916;
+    --surface: #ffffff;
+    --border: rgba(84,84,84,.15);
+    --shadow: 0 10px 35px rgba(30,25,22,.08);
+}
+
+html { font-size: 15px; }
+body {
+    font-family: 'Roboto', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    background: linear-gradient(180deg, #fffdf9 0%, #fdf5eb 100%);
+    color: var(--secondary);
+}
+
+h1, h2, h3, h4, h5, h6, .display-1, .display-2, .display-3, .display-4, .display-5, .display-6 {
+    font-family: 'Playfair Display', Georgia, serif;
+    color: var(--dark);
+}
+
+a { color: var(--primary); }
+a:hover { color: #c98b2a; }
+
+.text-primary { color: var(--primary) !important; }
+.bg-primary { background-color: var(--primary) !important; }
+.btn-primary {
+    background-color: var(--primary);
+    border-color: var(--primary);
+    color: #fff;
+}
+/* ?? Botones "Volver / Cancelar" ? azul suave ??? */
+.btn-outline-secondary {
+    color: #495057;
+    border-color: #6c757d;
+}
+
+    .btn-outline-secondary:hover {
+        background-color: #6c757d;
+        border-color: #6c757d;
+        color: #fff;
+    }
+
+/* ?? Botones "Cancelar" en formularios ? outline gris azulado */
+a.btn-outline-secondary,
+button.btn-outline-secondary {
+    color: #5a6472;
+    border-color: #8d99ae;
+}
+
+    a.btn-outline-secondary:hover,
+    button.btn-outline-secondary:hover {
+        background-color: #8d99ae;
+        color: #fff;
+    }
+
+/* ?? Botones de acción destructiva ??????????????? */
+.btn-danger {
+    background-color: #dc3545;
+    border-color: #dc3545;
+    color: #fff;
+}
+
+    .btn-danger:hover {
+        background-color: #bb2d3b;
+        border-color: #b02a37;
+        color: #fff;
+    }
+
+.btn-outline-danger {
+    color: #dc3545;
+    border-color: #dc3545;
+}
+
+    .btn-outline-danger:hover {
+        background: #dc3545;
+        color: #fff;
+    }
+
+/*  Trazabilidad / audit ? índigo  */
+.btn-outline-dark {
+    color: #3d405b;
+    border-color: #3d405b;
+}
+
+    .btn-outline-dark:hover {
+        background-color: #3d405b;
+        border-color: #3d405b;
+        color: #fff;
+    }
+
+/* Períodos / Reabrir ? teal  */
+.btn-outline-teal {
+    color: #0d9488;
+    border-color: #0d9488;
+}
+
+    .btn-outline-teal:hover {
+        background-color: #0d9488;
+        color: #fff;
+    }
+
+/*  Activar/Desactivar usuario ? púrpura  */
+button.btn-sm.btn-outline-secondary[type="submit"] {
+    color: #6d28d9;
+    border-color: #6d28d9;
+}
+
+    button.btn-sm.btn-outline-secondary[type="submit"]:hover {
+        background-color: #6d28d9;
+        color: #fff;
+    }
+
+.top-bar {
+    background: var(--dark);
+    color: rgba(255,255,255,.75);
+    font-size: .9rem;
+}
+.top-bar a { color: rgba(255,255,255,.75); text-decoration: none; }
+.top-bar a:hover { color: var(--primary); }
+
+.main-navbar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    width: 100%;
+    z-index: 1040;
+    background: rgba(30,25,22,.95);
+    box-shadow: 0 4px 30px rgba(0,0,0,.15);
+}
+.main-navbar .navbar-brand,
+.main-navbar .nav-link,
+.main-navbar .navbar-text { color: var(--light) !important; }
+.main-navbar .nav-link {
+    font-weight: 500;
+    padding-top: 1rem;
+    padding-bottom: 1rem;
+}
+.main-navbar .nav-link:hover,
+.main-navbar .nav-link.active { color: var(--primary) !important; }
+
+.hero-banner {
+    position: relative;
+    background:
+      linear-gradient(rgba(30,25,22,.62), rgba(30,25,22,.70)),
+      url('/theme/img/carousel-1.jpg') center/cover no-repeat;
+    padding: 4.5rem 0 3rem;
+    overflow: hidden;
+}
+.hero-banner::after {
+    content: "";
+    position: absolute;
+    inset: auto -10% -70px auto;
+    width: 320px;
+    height: 320px;
+    background: rgba(234,166,54,.12);
+    border-radius: 50%;
+    filter: blur(5px);
+}
+.hero-banner .hero-subtitle {
+    color: var(--primary);
+    text-transform: uppercase;
+    letter-spacing: .15rem;
+    font-weight: 700;
+    font-size: .9rem;
+}
+.hero-banner h1, .hero-banner p, .hero-banner .breadcrumb-item, .hero-banner .breadcrumb-item a {
+    color: #fff;
+}
+.hero-banner .lead { color: rgba(255,255,255,.84); }
+
+.page-shell {
+    margin-top: -1.5rem;
+    position: relative;
+    z-index: 2;
+}
+.content-card,
+.card,
+main form,
+main table.table,
+main .alert,
+main .list-group,
+main .table-responsive {
+    border-radius: 1rem;
+}
+.card, .content-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    box-shadow: var(--shadow);
+}
+
+.section-panel {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 1rem;
+    box-shadow: var(--shadow);
+    padding: 1.5rem;
+    margin-bottom: 1.5rem;
+}
+
+.home-stat {
+    background: var(--surface);
+    border-radius: 1rem;
+    border: 1px solid var(--border);
+    box-shadow: var(--shadow);
+    padding: 1.75rem;
+    height: 100%;
+    transition: transform .25s ease, box-shadow .25s ease;
+}
+.home-stat:hover {
+    transform: translateY(-6px);
+    box-shadow: 0 14px 40px rgba(30,25,22,.12);
+}
+.home-stat .stat-icon {
+    width: 58px;
+    height: 58px;
+    border-radius: 50%;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--light);
+    color: var(--primary);
+    font-weight: 700;
+    font-size: 1.15rem;
+}
+
+.table {
+    --bs-table-bg: transparent;
+}
+.table thead th {
+    background: #fff8f0;
+    color: var(--dark);
+    font-weight: 700;
+    border-bottom-width: 1px;
+}
+.table > :not(caption) > * > * {
+    padding: .9rem .85rem;
+    border-bottom-color: rgba(84,84,84,.09);
+}
+.table-striped > tbody > tr:nth-of-type(odd) > * {
+    --bs-table-accent-bg: rgba(253,245,235,.55);
+}
+
+.form-control, .form-select {
+    border-radius: .75rem;
+    border-color: rgba(84,84,84,.18);
+    padding: .75rem .9rem;
+}
+.form-control:focus, .form-select:focus {
+    border-color: rgba(234,166,54,.6);
+    box-shadow: 0 0 0 .2rem rgba(234,166,54,.15);
+}
+.btn {
+    border-radius: 999px;
+    font-weight: 500;
+    padding: .65rem 1.2rem;
+}
+.btn-sm {
+    border-radius: 999px;
+    padding: .4rem .85rem;
+}
+.badge { border-radius: 999px; padding: .5em .8em; }
+
+.login-shell {
+    min-height: 68vh;
+    display: flex;
+    align-items: center;
+}
+.login-card {
+    border: 0;
+    overflow: hidden;
+}
+.login-visual {
+    min-height: 100%;
+    background: linear-gradient(rgba(30,25,22,.60), rgba(30,25,22,.70)), url('/theme/img/carousel-2.jpg') center/cover no-repeat;
+    color: #fff;
+    padding: 2rem;
+}
+.login-visual h2, .login-visual p { color: #fff; }
+
+.footer {
+    background: var(--dark);
+    color: rgba(255,255,255,.72);
+    border-top: 3px solid var(--primary);
+}
+.footer strong, .footer h5 { color: #fff; }
+.footer-sticky {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    z-index: 1030;
+    width: 100%;
+}
+
+main > h2.h4,
+main > .d-flex > h2.h4,
+main > .d-flex > div > h2.h4 {
+    margin-bottom: 1rem;
+}
+
+main > form,
+main > .table,
+main > .table-responsive,
+main > .row,
+main > .alert,
+main > p.text-muted,
+main > .small.text-muted {
+    position: relative;
+    z-index: 1;
+}
+
+@media (max-width: 991.98px) {
+    .hero-banner { padding-top: 3.25rem; }
+    .page-shell { margin-top: -1rem; }
+}

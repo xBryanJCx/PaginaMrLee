@@ -1,0 +1,48 @@
+﻿@{
+    ViewData["Title"] = "Bienvenido";
+    Layout = "~/Views/Portal/_LayoutPortal.cshtml";
+}
+<div class="portal-hero">
+    <div class="container py-5">
+        <div class="row align-items-center g-5">
+            <div class="col-lg-6">
+                <div class="text-uppercase fw-bold small mb-2" style="color:var(--primary);letter-spacing:.12rem;">Panadería artesanal</div>
+                <h1 class="display-5 mb-3">El sabor de Mr Lee, directo a tu puerta 🥐</h1>
+                <p class="lead mb-4">Pedís en línea, nosotros horneamos con amor. Pan fresco, pasteles y más — listos cuando los necesitás.</p>
+                <div class="d-flex flex-wrap gap-2">
+                    <a asp-action="Registro" class="btn btn-primary btn-lg">Crear cuenta gratis</a>
+                    <a asp-action="Login" class="btn btn-outline-light btn-lg">Iniciar sesión</a>
+                </div>
+            </div>
+            <div class="col-lg-6 text-center">
+                <img src="/theme/img/about-1.jpg" class="img-fluid rounded-4 shadow-lg" style="max-height:380px;object-fit:cover;" alt="Mr Lee panadería" />
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="container py-5">
+    <div class="row g-4 text-center">
+        <div class="col-md-4">
+            <div class="portal-card h-100 p-4">
+                <div class="portal-icon mb-3">🍞</div>
+                <h5>Pan artesanal</h5>
+                <p class="text-muted">Horneado fresco cada día con ingredientes seleccionados.</p>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="portal-card h-100 p-4">
+                <div class="portal-icon mb-3">🚚</div>
+                <h5>Entrega a domicilio</h5>
+                <p class="text-muted">Seguí tu pedido en tiempo real desde que sale del horno.</p>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="portal-card h-100 p-4">
+                <div class="portal-icon mb-3">🎂</div>
+                <h5>Pedidos especiales</h5>
+                <p class="text-muted">Tortas y pasteles personalizados para tus celebraciones.</p>
+            </div>
+        </div>
+    </div>
+</div>

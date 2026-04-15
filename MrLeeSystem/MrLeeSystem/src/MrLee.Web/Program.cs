@@ -24,7 +24,16 @@ builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationSc
         options.AccessDeniedPath = "/Account/AccessDenied";
         options.Cookie.Name = "MrLee.Auth";
         options.SlidingExpiration = true;
+    })
+    .AddCookie("ClienteCookie", options =>
+    {
+        options.LoginPath = "/Portal/Login";
+        options.AccessDeniedPath = "/Portal/Login";
+        options.Cookie.Name = "MrLee.ClienteAuth";
+        options.SlidingExpiration = true;
+        options.ExpireTimeSpan = TimeSpan.FromHours(4);
     });
+
 
 builder.Services.AddAuthorization(options =>
 {
@@ -45,6 +54,14 @@ builder.Services.AddScoped<InventoryService>();
 builder.Services.AddScoped<OrderService>();
 builder.Services.AddScoped<OperatingIncomeService>();
 builder.Services.AddScoped<EmailService>();
+builder.Services.AddScoped<EmpleadoService>();
+builder.Services.AddScoped<VacacionService>();
+builder.Services.AddScoped<IncapacidadService>();
+builder.Services.AddScoped<DocumentoExpedienteService>();
+builder.Services.AddScoped<ContactosDireccionesService>();
+builder.Services.AddScoped<CuentaBancariaService>();
+builder.Services.AddScoped<MovimientoLaboralService>();
+builder.Services.AddScoped<ClienteService>();
 
 var app = builder.Build();
 

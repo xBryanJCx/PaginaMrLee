@@ -8,30 +8,30 @@
 <p class="text-muted">@p.Sku - @p.Name | Existencia actual: <strong>@p.CurrentStock.ToString("N2")</strong></p>
 
 <form method="post">
-    @Html.AntiForgeryToken()
-    <input type="hidden" asp-for="ProductId" />
-    <div asp-validation-summary="All" class="text-danger"></div>
+  @Html.AntiForgeryToken()
+  <input type="hidden" asp-for="ProductId" />
+  <div asp-validation-summary="All" class="text-danger"></div>
 
-    <div class="row">
-        <div class="col-md-4 mb-3">
-            <label class="form-label">Tipo</label>
-            <select asp-for="Type" class="form-select">
-                <option value="Entry">Entrada</option>
-                <option value="Exit">Salida</option>
-                <option value="Adjustment">Ajuste</option>
-            </select>
-        </div>
-        <div class="col-md-4 mb-3">
-            <label class="form-label">Cantidad</label>
-            <input asp-for="Quantity" class="form-control" />
-            <div class="form-text">Para ajustes, puede usar valores negativos.</div>
-        </div>
-        <div class="col-md-4 mb-3">
-            <label class="form-label">Motivo</label>
-            <input asp-for="Reason" class="form-control" />
-        </div>
+  <div class="row">
+    <div class="col-md-4 mb-3">
+      <label class="form-label">Tipo</label>
+      <select asp-for="Type" class="form-select">
+        <option value="Entry">Entrada</option>
+        <option value="Exit">Salida</option>
+        <option value="Adjustment">Ajuste</option>
+      </select>
     </div>
+    <div class="col-md-4 mb-3">
+      <label class="form-label">Cantidad</label>
+      <input asp-for="Quantity" class="form-control" />
+      <div class="form-text">Para ajustes, puede usar valores negativos.</div>
+    </div>
+    <div class="col-md-4 mb-3">
+      <label class="form-label">Motivo</label>
+      <input asp-for="Reason" class="form-control" />
+    </div>
+  </div>
 
-    <button class="btn btn-primary" type="submit">Guardar</button>
-    <a class="btn btn-outline-secondary" asp-action="Movements" asp-route-id="@p.Id">Volver</a>
+  <button class="btn btn-primary" type="submit">Guardar</button>
+    <a class="btn btn-outline-primary" asp-action="Movements" asp-route-id="@p.Id">Volver</a>
 </form>

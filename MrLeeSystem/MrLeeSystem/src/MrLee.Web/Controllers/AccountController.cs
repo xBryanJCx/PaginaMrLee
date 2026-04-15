@@ -50,7 +50,7 @@ public class AccountController : Controller
         var user = await _db.Users.Include(u => u.Role).FirstOrDefaultAsync(u => u.Email == normalizedEmail);
         if (user == null)
         {
-            ModelState.AddModelError("", "Credenciales inválidas.");
+            ModelState.AddModelError("", "Credenciales invalidas.");
             return View(vm);
         }
 
@@ -62,7 +62,7 @@ public class AccountController : Controller
 
         if (user.LockoutEndUtc.HasValue && user.LockoutEndUtc.Value > DateTime.UtcNow)
         {
-            ModelState.AddModelError("", "Usuario bloqueado temporalmente. Intente nuevamente más tarde.");
+            ModelState.AddModelError("", "Usuario bloqueado temporalmente. Intente nuevamente mas tarde.");
             return View(vm);
         }
 
@@ -76,7 +76,7 @@ public class AccountController : Controller
             }
             await _db.SaveChangesAsync();
 
-            ModelState.AddModelError("", "Credenciales inválidas.");
+            ModelState.AddModelError("", "Credenciales invalidas.");
             return View(vm);
         }
 
@@ -90,7 +90,7 @@ public class AccountController : Controller
 
         if (user.MustChangePassword)
         {
-            TempData["Msg"] = "Debe cambiar la contraseña temporal antes de continuar.";
+            TempData["Msg"] = "Debe cambiar la contrasena temporal antes de continuar.";
             return RedirectToAction(nameof(ChangeTemporaryPassword));
         }
 
@@ -128,35 +128,45 @@ public class AccountController : Controller
             try
             {
                 var safeName = HtmlEncoder.Default.Encode(user.FullName);
-                var safeEmail = HtmlEncoder.Default.Encode(user.Email);
                 var safePwd = HtmlEncoder.Default.Encode(temporaryPassword);
 
                 var html = $@"
-<div style='font-family:Arial,Helvetica,sans-serif;font-size:14px;color:#222'>
-  <h2 style='margin-bottom:8px;'>Recuperación de acceso - Mr Lee System</h2>
-  <p>Hola <strong>{safeName}</strong>,</p>
-  <p>Se generó una contraseña temporal para tu cuenta.</p>
-  <p><strong>Usuario:</strong> {safeEmail}<br/>
-     <strong>Contraseña temporal:</strong> {safePwd}</p>
-  <p>Al iniciar sesión el sistema te obligará a cambiarla inmediatamente.</p>
-  <p>Si no solicitaste este cambio, informa al administrador.</p>
+<div style='margin:0;padding:24px;background:#2f241e;font-family:Arial,Helvetica,sans-serif;'>
+  <div style='max-width:620px;margin:0 auto;background:#ffffff;padding:40px 48px;color:#2b2b2b;'>
+    <h1 style='margin:0 0 24px;font-size:24px;line-height:1.2;font-weight:700;'>Recuperacion de acceso en Mr Lee 🥐</h1>
+    <p style='margin:0 0 18px;font-size:16px;line-height:1.6;'>Hola <strong>{safeName}</strong>, te compartimos tu contrasena temporal para ingresar al sistema:</p>
+    <div style='display:inline-block;background:#EAA636;color:#ffffff;padding:14px 22px;border-radius:10px;font-size:20px;font-weight:700;letter-spacing:.08em;'>{safePwd}</div>
+    <p style='margin:22px 0 0;font-size:16px;line-height:1.6;'>Cuando inicies sesion, el sistema te pedira cambiarla inmediatamente.</p>
+    <p style='margin:14px 0 0;font-size:15px;line-height:1.6;color:#5c5c5c;'>Si no solicitaste este cambio, informa al administrador cuanto antes.</p>
+  </div>
 </div>";
 
-                var text = $"Recuperación de acceso - Mr Lee System\n\nUsuario: {user.Email}\nContraseña temporal: {temporaryPassword}\n\nAl iniciar sesión debes cambiarla inmediatamente.";
+                html = $@"
+<div style='margin:0;padding:24px;background:#2f241e;font-family:Arial,Helvetica,sans-serif;'>
+  <div style='max-width:620px;margin:0 auto;background:#ffffff;padding:40px 48px;color:#2b2b2b;'>
+    <h1 style='margin:0 0 24px;font-size:24px;line-height:1.2;font-weight:700;'>Recuperacion de acceso en Mr Lee</h1>
+    <p style='margin:0 0 18px;font-size:16px;line-height:1.6;'>Hola <strong>{safeName}</strong>, te compartimos tu contrasena temporal para ingresar al sistema:</p>
+    <div style='display:inline-block;background:#EAA636;color:#ffffff;padding:14px 22px;border-radius:10px;font-size:20px;font-weight:700;letter-spacing:.08em;'>{safePwd}</div>
+    <p style='margin:22px 0 0;font-size:16px;line-height:1.6;'>Cuando inicies sesion, el sistema te pedira cambiarla inmediatamente.</p>
+    <p style='margin:14px 0 0;font-size:15px;line-height:1.6;color:#5c5c5c;'>Si no solicitaste este cambio, informa al administrador cuanto antes.</p>
+  </div>
+</div>";
 
-                await _email.SendAsync(user.Email, "Mr Lee System - Contraseña temporal", html, text);
+                var text = $"Recuperacion de acceso - Mr Lee System\n\nHola {user.FullName},\n\nTu contrasena temporal es: {temporaryPassword}\n\nAl iniciar sesion, el sistema te pedira cambiarla inmediatamente.\n\nSi no solicitaste este cambio, informa al administrador cuanto antes.";
+
+                await _email.SendAsync(user.Email, "Mr Lee System - Contrasena temporal", html, text);
 
                 await _audit.LogAsync(null, user.Email, "AUTH.FORGOT_PASSWORD", "AppUser", user.Id.ToString(), new { user.Email, Sent = true });
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error enviando correo de recuperación para {Email}", user.Email);
-                ModelState.AddModelError("", "No se pudo enviar el correo. Revise la configuración SMTP y vuelva a intentar.");
+                _logger.LogError(ex, "Error enviando correo de recuperacion para {Email}", user.Email);
+                ModelState.AddModelError("", "No se pudo enviar el correo. Revise la configuracion SMTP y vuelva a intentar.");
                 return View(vm);
             }
         }
 
-        TempData["Msg"] = "Si el correo existe y está activo, se envió una contraseña temporal.";
+        TempData["Msg"] = "Si el correo existe y esta activo, se envio una contrasena temporal.";
         return RedirectToAction(nameof(Login));
     }
 
@@ -173,7 +183,7 @@ public class AccountController : Controller
 
         if (vm.NewPassword != vm.ConfirmPassword)
         {
-            ModelState.AddModelError(nameof(vm.ConfirmPassword), "La confirmación no coincide.");
+            ModelState.AddModelError(nameof(vm.ConfirmPassword), "La confirmacion no coincide.");
             return View(vm);
         }
 
@@ -186,7 +196,7 @@ public class AccountController : Controller
 
         if (_pwd.Verify(vm.NewPassword, user.PasswordHash))
         {
-            ModelState.AddModelError(nameof(vm.NewPassword), "La nueva contraseña debe ser distinta a la temporal.");
+            ModelState.AddModelError(nameof(vm.NewPassword), "La nueva contrasena debe ser distinta a la temporal.");
             return View(vm);
         }
 
@@ -201,7 +211,7 @@ public class AccountController : Controller
         await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
         await SignInUserAsync(user);
 
-        TempData["Msg"] = "Contraseña actualizada correctamente.";
+        TempData["Msg"] = "Contrasena actualizada correctamente.";
         return RedirectToAction("Index", "Home");
     }
 
@@ -249,18 +259,18 @@ public class LoginVm
 public class ForgotPasswordVm
 {
     [Required(ErrorMessage = "El correo es obligatorio.")]
-    [EmailAddress(ErrorMessage = "Ingrese un correo válido.")]
+    [EmailAddress(ErrorMessage = "Ingrese un correo valido.")]
     public string Email { get; set; } = "";
 }
 
 public class ChangeTemporaryPasswordVm
 {
-    [Required(ErrorMessage = "La nueva contraseña es obligatoria.")]
-    [MinLength(8, ErrorMessage = "La contraseña debe tener al menos 8 caracteres.")]
+    [Required(ErrorMessage = "La nueva contrasena es obligatoria.")]
+    [MinLength(8, ErrorMessage = "La contrasena debe tener al menos 8 caracteres.")]
     [DataType(DataType.Password)]
     public string NewPassword { get; set; } = "";
 
-    [Required(ErrorMessage = "Confirme la nueva contraseña.")]
+    [Required(ErrorMessage = "Confirme la nueva contrasena.")]
     [DataType(DataType.Password)]
     public string ConfirmPassword { get; set; } = "";
 }

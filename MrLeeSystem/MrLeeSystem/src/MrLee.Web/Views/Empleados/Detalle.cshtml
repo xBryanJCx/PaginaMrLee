@@ -1,0 +1,149 @@
+﻿@model MrLee.Web.Models.Empleado
+@{
+    ViewData["Title"] = "Detalle empleado";
+}
+
+<div class="row g-4">
+    <div class="col-lg-8">
+        <div class="section-panel">
+            <div class="d-flex justify-content-between align-items-start mb-4">
+                <div>
+                    <h4 class="mb-1">@Model.Nombre @Model.Apellido</h4>
+                    <div class="text-muted small">@Model.Codigo · @Model.Identificacion</div>
+                </div>
+                @if (Model.Estado == MrLee.Web.Models.EstadoEmpleado.ACTIVO)
+                {
+                    <span class="badge bg-success fs-6">Activo</span>
+                }
+                else
+                {
+
+                    <span class="badge bg-secondary fs-6">Inactivo</span>
+                }
+            </div>
+
+            <div class="row g-3">
+                <div class="col-sm-6">
+                    <div class="text-muted small">Correo</div>
+                    <div>@Model.Email</div>
+                </div>
+                <div class="col-sm-6">
+                    <div class="text-muted small">Teléfono</div>
+                    <div>@Model.Telefono</div>
+                </div>
+                <div class="col-sm-6">
+                    <div class="text-muted small">Puesto</div>
+                    <div>@Model.Puesto?.Nombre</div>
+                </div>
+                <div class="col-sm-6">
+                    <div class="text-muted small">Sucursal</div>
+                    <div>@Model.Sucursal?.Nombre</div>
+                </div>
+                <div class="col-sm-6">
+                    <div class="text-muted small">Fecha de ingreso</div>
+                    <div>@Model.FechaIngreso.ToString("dd/MM/yyyy")</div>
+                </div>
+                <div class="col-sm-6">
+                    <div class="text-muted small">Salario base</div>
+                    <div>₡ @Model.SalarioBase.ToString("N2")</div>
+                </div>
+                <div class="col-sm-6">
+                    <div class="text-muted small">Tipo contrato</div>
+                    <div>@Model.TipoContrato</div>
+                </div>
+                <div class="col-sm-6">
+                    <div class="text-muted small">Jornada</div>
+                    <div>@Model.Jornada</div>
+                </div>
+                <div class="col-sm-6">
+                    <div class="text-muted small">Días vacación disponibles</div>
+                    <div><strong>@Model.DiasVacacionDisponibles</strong> día(s)</div>
+                </div>
+                @if (Model.Estado == MrLee.Web.Models.EstadoEmpleado.INACTIVO && Model.FechaSalida.HasValue)
+                {
+                    <div class="col-sm-6">
+                        <div class="text-muted small">Fecha de salida</div>
+                        <div>@Model.FechaSalida.Value.ToString("dd/MM/yyyy")</div>
+                    </div>
+                }
+                @if (!string.IsNullOrEmpty(Model.MotivoCambioEstado))
+                {
+                    <div class="col-12">
+                        <div class="text-muted small">Motivo cambio de estado</div>
+                        <div>@Model.MotivoCambioEstado</div>
+                    </div>
+                }
+                @if (!string.IsNullOrEmpty(Model.Observaciones))
+                {
+                    <div class="col-12">
+                        <div class="text-muted small">Observaciones</div>
+                        <div>@Model.Observaciones</div>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+
+    <div class="col-lg-4">
+        <div class="section-panel mb-3">
+            <h6 class="mb-3" style="color:var(--primary);">Acciones</h6>
+            <div class="d-grid gap-2">
+                <div class="d-grid gap-2 mt-3">
+                    <a asp-action="Editar" asp-route-id="@Model.Id"
+                       class="btn btn-warning text-dark">✏️ Editar</a>
+
+                    <a asp-action="CambiarEstado" asp-route-id="@Model.Id"
+                       class="btn btn-info text-white">⚙️ Cambiar estado</a>
+
+                    <a asp-controller="Vacaciones" asp-action="Solicitar"
+                       asp-route-empleadoId="@Model.Id"
+                       class="btn btn-primary">🏖 Solicitar vacaciones</a>
+
+                    <a asp-controller="Vacaciones" asp-action="Historial"
+                       asp-route-empleadoId="@Model.Id"
+                       class="btn btn-outline-primary">📋 Historial vacaciones</a>
+
+                    <a asp-controller="Incapacidades" asp-action="Index"
+                       asp-route-empleadoId="@Model.Id"
+                       class="btn btn-outline-warning text-dark">🏥 Incapacidades</a>
+
+                    <a asp-controller="DocumentosExpediente" asp-action="Index"
+                       asp-route-empleadoId="@Model.Id"
+                       class="btn btn-outline-secondary">📁 Expediente digital</a>
+
+                    <a asp-controller="ContactosDirecciones" asp-action="Index"
+                       asp-route-empleadoId="@Model.Id"
+                       class="btn btn-outline-secondary">📍 Contactos y direcciones</a>
+
+                    <a asp-controller="CuentasBancarias" asp-action="Index"
+                       asp-route-empleadoId="@Model.Id"
+                       class="btn btn-outline-secondary">🏦 Cuentas bancarias</a>
+
+                    <a asp-controller="MovimientosLaborales" asp-action="Index"
+                       asp-route-empleadoId="@Model.Id"
+                       class="btn btn-outline-secondary">🔄 Movimientos</a>
+                </div>
+            </div>
+        </div>
+        <div class="section-panel">
+            <h6 class="mb-2 text-muted small">Auditoría</h6>
+            <div class="small text-muted">Creado: @Model.CreatedAtUtc.ToString("dd/MM/yyyy HH:mm") UTC</div>
+            @if (!string.IsNullOrEmpty(Model.CreatedByEmail))
+            {
+                <div class="small text-muted">Por: @Model.CreatedByEmail</div>
+            }
+            @if (Model.UpdatedAtUtc.HasValue)
+            {
+                <div class="small text-muted mt-1">Modificado: @Model.UpdatedAtUtc.Value.ToString("dd/MM/yyyy HH:mm") UTC</div>
+                @if (!string.IsNullOrEmpty(Model.UpdatedByEmail))
+                {
+                    <div class="small text-muted">Por: @Model.UpdatedByEmail</div>
+                }
+            }
+        </div>
+    </div>
+</div>
+
+<div class="mt-3">
+    <a asp-action="Index" class="btn btn-outline-primary">← Volver al listado</a>
+</div>

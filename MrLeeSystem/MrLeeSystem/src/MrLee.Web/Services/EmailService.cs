@@ -1,9 +1,10 @@
-﻿using Microsoft.Extensions.Options;
-using MrLee.Web.Models;
 using System.Net;
 using System.Net.Mail;
+using Microsoft.Extensions.Options;
+using MrLee.Web.Models;
 
 namespace MrLee.Web.Services;
+
 public sealed class EmailService
 {
     private readonly SmtpSettings _settings;
@@ -53,4 +54,3 @@ public sealed class EmailService
         await client.SendMailAsync(message);
     }
 }
-

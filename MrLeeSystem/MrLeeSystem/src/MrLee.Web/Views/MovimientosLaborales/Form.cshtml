@@ -1,0 +1,63 @@
+﻿@model MrLee.Web.Models.MovimientoFormVm
+@{
+    var esEdicion = Model.MovimientoId.HasValue;
+    ViewData["Title"] = esEdicion ? "Editar movimiento" : "Nuevo movimiento";
+}
+<div class="row justify-content-center">
+    <div class="col-lg-7">
+        <div class="section-panel">
+            <h5 class="mb-1">@Model.NombreEmpleado</h5>
+            <p class="text-muted small mb-4">@ViewData["Title"]</p>
+            <form asp-action="@(esEdicion ? "Editar" : "Crear")" method="post">
+                @Html.AntiForgeryToken()
+                @if (esEdicion)
+                {
+                    <input type="hidden" asp-for="MovimientoId" />
+                }
+                <input type="hidden" asp-for="EmpleadoId" />
+                <input type="hidden" asp-for="NombreEmpleado" />
+                <div asp-validation-summary="All" class="alert alert-danger mb-3"></div>
+                <div class="row g-3 mb-3">
+                    <div class="col-md-6">
+                        <label class="form-label fw-medium">Nuevo puesto <span class="text-danger">*</span></label>
+                        <select asp-for="PuestoIdNuevo" asp-items="Model.Puestos" class="form-select">
+                            <option value="0">-- Seleccione --</option>
+                        </select>
+                        <span asp-validation-for="PuestoIdNuevo" class="text-danger small"></span>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label fw-medium">Nueva sucursal <span class="text-danger">*</span></label>
+                        <select asp-for="SucursalIdNueva" asp-items="Model.Sucursales" class="form-select">
+                            <option value="0">-- Seleccione --</option>
+                        </select>
+                        <span asp-validation-for="SucursalIdNueva" class="text-danger small"></span>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label fw-medium">Vigente desde <span class="text-danger">*</span></label>
+                        <input asp-for="VigenciaDesde" class="form-control" type="date" />
+                        <span asp-validation-for="VigenciaDesde" class="text-danger small"></span>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label fw-medium">Vigente hasta <span class="text-muted">(opcional)</span></label>
+                        <input asp-for="VigenciaHasta" class="form-control" type="date" />
+                    </div>
+                    <div class="col-12">
+                        <label class="form-label fw-medium">Motivo <span class="text-danger">*</span></label>
+                        <textarea asp-for="Motivo" class="form-control" rows="2" maxlength="400"></textarea>
+                        <span asp-validation-for="Motivo" class="text-danger small"></span>
+                    </div>
+                </div>
+                <div class="d-flex gap-2 justify-content-end">
+                    <a asp-action="Index" asp-route-empleadoId="@Model.EmpleadoId" class="btn btn-outline-secondary">Cancelar</a>
+                    <button type="submit" class="btn btn-success">💾 Guardar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+
+}

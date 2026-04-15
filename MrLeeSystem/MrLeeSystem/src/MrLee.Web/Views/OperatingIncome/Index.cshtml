@@ -1,106 +1,181 @@
 @model List<OperatingIncome>
 @{
     ViewData["Title"] = "Ingresos operativos";
+    var hasFiltersApplied =
+        !string.IsNullOrWhiteSpace(ViewBag.From as string) ||
+        !string.IsNullOrWhiteSpace(ViewBag.To as string) ||
+        !string.IsNullOrWhiteSpace(ViewBag.Query as string) ||
+        ((bool?)ViewBag.IncludeVoided ?? false);
+
+    string GetTypeLabel(OperatingIncomeType type) => type switch
+    {
+        OperatingIncomeType.Venta => "Venta",
+        OperatingIncomeType.Cobro => "Cobro",
+        _ => "Otro"
+    };
+
+    string GetTypeClass(OperatingIncomeType type) => type switch
+    {
+        OperatingIncomeType.Venta => "income-type-chip income-type-chip--venta",
+        OperatingIncomeType.Cobro => "income-type-chip income-type-chip--cobro",
+        _ => "income-type-chip income-type-chip--otro"
+    };
 }
 
-<div class="section-panel mb-4">
-    <form method="get" class="row g-3 align-items-end">
-        <div class="col-md-3">
+<section class="section-panel app-page-header mb-4 operating-income-intro">
+    <div class="app-title-row">
+        <div>
+            <div class="app-eyebrow mb-2">Control financiero</div>
+            <h2 class="display-6 mb-2">Ingresos operativos</h2>
+            <p class="app-page-copy mb-0">Consulta, filtra y administra los ingresos registrados con acceso rapido a reportes, trazabilidad y exportaciones.</p>
+        </div>
+        <a asp-action="Create" class="btn btn-primary">Nuevo ingreso</a>
+    </div>
+</section>
+
+<section class="section-panel mb-4">
+    <form method="get" class="row g-3 align-items-end operating-income-filter operating-income-filter__form">
+        <div class="col-xl-3 col-lg-6">
             <label class="form-label">Desde</label>
             <input type="date" class="form-control" name="from" value="@ViewBag.From" />
         </div>
-        <div class="col-md-3">
+        <div class="col-xl-3 col-lg-6">
             <label class="form-label">Hasta</label>
             <input type="date" class="form-control" name="to" value="@ViewBag.To" />
         </div>
-        <div class="col-md-3">
+        <div class="col-xl-4 col-lg-8">
             <label class="form-label">Buscar</label>
-            <input type="text" class="form-control" name="q" value="@ViewBag.Query" placeholder="Número, origen, referencia..." />
+            <input type="text" class="form-control" name="q" value="@ViewBag.Query" placeholder="Numero, origen o referencia..." />
         </div>
-        <div class="col-md-2">
-            <div class="form-check mt-4">
-                <input class="form-check-input" type="checkbox" name="includeVoided" value="true" @(ViewBag.IncludeVoided ? "checked" : null) />
-                <label class="form-check-label">Incluir anulados</label>
+        <div class="col-xl-auto col-lg-4">
+            <div class="form-check operating-income-filter__toggle">
+                <input class="form-check-input" type="checkbox" id="includeVoided" name="includeVoided" value="true" @(ViewBag.IncludeVoided ? "checked" : null) />
+                <label class="form-check-label mb-0" for="includeVoided">Incluir anulados</label>
             </div>
         </div>
-        <div class="col-md-1 d-grid">
-            <button class="btn btn-info text-white">🔍 Filtrar</button>
+        <div class="col-xl-auto col-lg-12 ms-xl-auto">
+            <button class="btn btn-primary operating-income-filter__apply" type="submit">Aplicar</button>
         </div>
     </form>
 
-    <div class="d-flex flex-wrap gap-2 mt-4">
-        <a asp-action="Create" class="btn btn-success">&#43; Nuevo ingreso</a>
-        <a asp-action="Summary" class="btn btn-primary">📊 Resumen diario</a>
-        <a asp-action="Periods" class="btn btn-outline-secondary">📅 Períodos</a>
-        <a asp-action="Export" asp-route-from="@ViewBag.From" asp-route-to="@ViewBag.To" class="btn btn-outline-success">⬇ Exportar detalle CSV</a>
-        <a asp-action="Export" asp-route-format="summary" asp-route-from="@ViewBag.From" asp-route-to="@ViewBag.To" class="btn btn-outline-success">⬇ Exportar resumen CSV</a>
+    <div class="app-split-actions mt-4">
+        <div class="app-action-group">
+            <a asp-action="Summary" class="btn btn-outline-primary">Resumen diario</a>
+            <a asp-action="Periods" class="btn btn-outline-secondary">Periodos contables</a>
+        </div>
+        <div class="app-action-group app-action-group--right">
+            <a asp-action="Export" asp-route-from="@ViewBag.From" asp-route-to="@ViewBag.To" class="btn btn-outline-success btn-sm">Exportar detalle</a>
+            <a asp-action="Export" asp-route-format="summary" asp-route-from="@ViewBag.From" asp-route-to="@ViewBag.To" class="btn btn-outline-success btn-sm">Exportar resumen</a>
+        </div>
     </div>
-</div>
+</section>
 
-<div class="row g-4 mb-4">
-    <div class="col-md-4">
-        <div class="home-stat">
-            <div class="h6 text-muted">Registros</div>
-            <div class="display-6">@Model.Count</div>
+<section class="row g-4 mb-4">
+    <div class="col-md-6 col-xl-3">
+        <div class="kpi-card">
+            <div class="kpi-card__label">Registros visibles</div>
+            <div class="kpi-card__value">@ViewBag.VisibleCount</div>
+            <div class="kpi-card__note">Resultados segun los filtros aplicados.</div>
         </div>
     </div>
-    <div class="col-md-4">
-        <div class="home-stat">
-            <div class="h6 text-muted">Monto visible</div>
-            <div class="display-6">₡ @(((decimal)ViewBag.Total).ToString("N2"))</div>
+    <div class="col-md-6 col-xl-3">
+        <div class="kpi-card">
+            <div class="kpi-card__label">Monto visible</div>
+            <div class="kpi-card__value">&#8353; @(((decimal)ViewBag.TotalVisible).ToString("N2"))</div>
+            <div class="kpi-card__note">Suma de ingresos activos dentro de la vista actual.</div>
         </div>
     </div>
-    <div class="col-md-4">
-        <div class="home-stat">
-            <div class="h6 text-muted">Requerimientos cubiertos</div>
-            <div class="mb-0">RF-ING-001 al RF-ING-008</div>
+    <div class="col-md-6 col-xl-3">
+        <div class="kpi-card">
+            <div class="kpi-card__label">Activos</div>
+            <div class="kpi-card__value">@ViewBag.ActiveCount</div>
+            <div class="kpi-card__note">Ingresos disponibles para consulta y reportes.</div>
         </div>
     </div>
-</div>
+    <div class="col-md-6 col-xl-3">
+        <div class="kpi-card">
+            <div class="kpi-card__label">Anulados</div>
+            <div class="kpi-card__value">@ViewBag.VoidedCount</div>
+            <div class="kpi-card__note">Registros anulados incluidos en el resultado actual.</div>
+        </div>
+    </div>
+</section>
 
-<div class="section-panel">
-    <div class="table-responsive">
-        <table class="table table-hover align-middle">
-            <thead>
-                <tr>
-                    <th>Número</th>
-                    <th>Fecha</th>
-                    <th>Tipo</th>
-                    <th>Origen</th>
-                    <th>Referencia</th>
-                    <th class="text-end">Monto</th>
-                    <th>Estado</th>
-                    <th></th>
-                </tr>
-            </thead>
-            <tbody>
+<section class="section-panel">
+    @if (Model.Any())
+    {
+        <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0">
+                <thead>
+                    <tr>
+                        <th>Numero</th>
+                        <th>Fecha</th>
+                        <th>Tipo</th>
+                        <th>Origen</th>
+                        <th>Referencia</th>
+                        <th class="text-end">Monto</th>
+                        <th>Estado</th>
+                        <th class="text-end">Acciones</th>
+                    </tr>
+                </thead>
+                <tbody>
                 @foreach (var item in Model)
                 {
                     <tr>
                         <td>@item.Number</td>
                         <td>@item.IncomeDate.ToString("dd/MM/yyyy")</td>
-                        <td>@item.Type</td>
+                        <td>
+                            <span class="@GetTypeClass(item.Type)">@GetTypeLabel(item.Type)</span>
+                        </td>
                         <td>@item.SourceName</td>
-                        <td>@item.Reference</td>
-                        <td class="text-end">₡ @item.Amount.ToString("N2")</td>
+                        <td>@(string.IsNullOrWhiteSpace(item.Reference) ? "Sin referencia" : item.Reference)</td>
+                        <td class="text-end">&#8353; @item.Amount.ToString("N2")</td>
                         <td>
                             @if (item.IsVoided)
                             {
-                                <span class="badge bg-danger">Anulado</span>
+                                <span class="app-status-badge app-status-badge--voided">Anulado</span>
                             }
                             else
                             {
-                                <span class="badge bg-success">Activo</span>
+                                <span class="app-status-badge app-status-badge--active">Activo</span>
                             }
                         </td>
-                        <td class="text-nowrap">
-                            <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-sm btn-primary">Ver</a>
-                            <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-sm btn-warning text-dark">✏️ Editar</a>
-                            <a asp-action="Trace" asp-route-id="@item.Id" class="btn btn-sm btn-outline-secondary">📋 Traza</a>
+                        <td class="text-end">
+                            <div class="app-table-actions">
+                                <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-sm btn-outline-dark">Ver</a>
+                                <a asp-action="Trace" asp-route-id="@item.Id" class="btn btn-sm btn-outline-dark">Trazabilidad</a>
+                                <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-sm btn-outline-primary">Editar</a>
+                            </div>
                         </td>
                     </tr>
                 }
-            </tbody>
-        </table>
-    </div>
-</div>
+                </tbody>
+            </table>
+        </div>
+    }
+    else
+    {
+        @if (hasFiltersApplied)
+        {
+            <partial name="_EmptyMessage" model='new EmptyMessageVm
+            {
+                Variant = "search",
+                Title = "No encontramos resultados",
+                Message = "Prueba ajustando tu busqueda o filtros para encontrar el ingreso que necesitas.",
+                SupportText = "Puedes limpiar los filtros actuales o intentar con otra referencia, fecha u origen.",
+                ActionText = "Limpiar filtros",
+                ActionUrl = Url.Action("Index")!
+            }' />
+        }
+        else
+        {
+            <partial name="_EmptyMessage" model='new EmptyMessageVm
+            {
+                Title = "Sin ingresos para mostrar",
+                Message = "Todavia no hay ingresos registrados en este modulo.",
+                ActionText = "Nuevo ingreso",
+                ActionUrl = Url.Action("Create")!
+            }' />
+        }
+    }
+</section>

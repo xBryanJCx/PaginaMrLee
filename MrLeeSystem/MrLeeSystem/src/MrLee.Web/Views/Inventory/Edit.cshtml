@@ -5,41 +5,41 @@
 <h2 class="h4">Editar producto</h2>
 
 <form method="post">
-    @Html.AntiForgeryToken()
-    <input type="hidden" asp-for="Id" />
-    <div asp-validation-summary="All" class="text-danger"></div>
+  @Html.AntiForgeryToken()
+  <input type="hidden" asp-for="Id" />
+  <div asp-validation-summary="All" class="text-danger"></div>
 
-    <div class="row">
-        <div class="col-md-4 mb-3">
-            <label class="form-label">SKU</label>
-            <input asp-for="Sku" class="form-control" />
-            <span asp-validation-for="Sku" class="text-danger"></span>
-        </div>
-        <div class="col-md-8 mb-3">
-            <label class="form-label">Nombre</label>
-            <input asp-for="Name" class="form-control" />
-            <span asp-validation-for="Name" class="text-danger"></span>
-        </div>
+  <div class="row">
+    <div class="col-md-4 mb-3">
+      <label class="form-label">SKU</label>
+      <input asp-for="Sku" class="form-control" />
+      <span asp-validation-for="Sku" class="text-danger"></span>
     </div>
-
-    <div class="row">
-        <div class="col-md-4 mb-3">
-            <label class="form-label">Unidad</label>
-            <input asp-for="Unit" class="form-control" />
-        </div>
-        <div class="col-md-4 mb-3">
-            <label class="form-label">Precio unitario</label>
-            <input asp-for="UnitPrice" class="form-control" />
-        </div>
-        <div class="col-md-4 mb-3">
-            <label class="form-label">Activo</label>
-            <select asp-for="IsActive" class="form-select">
-                <option value="true">Sí</option>
-                <option value="false">No</option>
-            </select>
-        </div>
+    <div class="col-md-8 mb-3">
+      <label class="form-label">Nombre</label>
+      <input asp-for="Name" class="form-control" />
+      <span asp-validation-for="Name" class="text-danger"></span>
     </div>
+  </div>
 
-    <button class="btn btn-primary" type="submit">Guardar</button>
-    <a class="btn btn-outline-secondary" asp-action="Index">Volver</a>
+  <div class="row">
+    <div class="col-md-4 mb-3">
+      <label class="form-label">Unidad</label>
+      <input asp-for="Unit" class="form-control" />
+    </div>
+    <div class="col-md-4 mb-3">
+      <label class="form-label">Precio unitario</label>
+      <input asp-for="UnitPrice" class="form-control" />
+    </div>
+    <div class="col-md-4 mb-3">
+      <label class="form-label">Activo</label>
+      <select asp-for="IsActive" class="form-select">
+        <option value="true">Sí</option>
+        <option value="false">No</option>
+      </select>
+    </div>
+  </div>
+
+  <button class="btn btn-primary" type="submit">Guardar</button>
+    <a class="btn btn-outline-primary" asp-action="Index">Volver</a>
 </form>

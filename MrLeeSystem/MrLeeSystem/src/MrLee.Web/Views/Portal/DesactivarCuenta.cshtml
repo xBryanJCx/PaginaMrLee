@@ -1,0 +1,45 @@
+﻿@model MrLee.Web.Models.DesactivarCuentaVm
+@{
+    ViewData["Title"] = "Desactivar cuenta";
+    Layout = "~/Views/Portal/_LayoutPortal.cshtml";
+}
+<div class="container py-4">
+    <div class="row justify-content-center">
+        <div class="col-lg-5">
+            <div class="portal-card p-4">
+                <h4 class="text-danger mb-3">⛔ Desactivar mi cuenta</h4>
+                <p class="text-muted small mb-4">Tu cuenta quedará inactiva pero podés reactivarla dentro de los próximos <strong>30 días</strong>. Después de ese período los datos serán eliminados.</p>
+                <form asp-action="DesactivarCuenta" method="post">
+                    @Html.AntiForgeryToken()
+                    <div asp-validation-summary="All" class="alert alert-danger small mb-3"></div>
+                    <div class="mb-3">
+                        <label class="form-label fw-medium">Confirmá tu contraseña <span class="text-danger">*</span></label>
+                        <input asp-for="Password" class="form-control" type="password" />
+                        <span asp-validation-for="Password" class="text-danger small"></span>
+                    </div>
+                    <div class="mb-4">
+                        <label class="form-label fw-medium">Motivo <span class="text-muted">(opcional)</span></label>
+                        <textarea asp-for="MotivoBaja" class="form-control" rows="3" maxlength="300" placeholder="¿Por qué desactivás tu cuenta?"></textarea>
+                    </div>
+                    <div class="d-flex gap-2 justify-content-end">
+                        <a asp-action="Panel" class="btn btn-outline-secondary">Cancelar</a>
+                        <button type="submit" class="btn btn-danger"
+                                onclick="return confirm('¿Estás seguro/a? Tu cuenta quedará desactivada.')">
+                            Desactivar mi cuenta
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+
+}
+
+
+@* ── VERIFICAR EMAIL ── *@
+@* Guardar como Views/Portal/VerificarEmail.cshtml *@

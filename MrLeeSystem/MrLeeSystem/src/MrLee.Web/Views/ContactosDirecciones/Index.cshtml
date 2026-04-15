@@ -1,0 +1,106 @@
+﻿@{
+    ViewData["Title"] = "Contactos y Direcciones";
+    var emp = ViewBag.Empleado as MrLee.Web.Models.Empleado;
+    var dirs = ViewBag.Direcciones as List<MrLee.Web.Models.DireccionEmpleado> ?? new();
+    var cons = ViewBag.Contactos as List<MrLee.Web.Models.ContactoEmergencia> ?? new();
+    var inclElim = (bool)(ViewBag.IncluirEliminados ?? false);
+}
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <h4 class="mb-0">Ficha — @emp?.Nombre @emp?.Apellido</h4>
+    <div class="form-check mt-1">
+        <a asp-action="Index" asp-route-empleadoId="@emp?.Id" asp-route-incluirEliminados="@(!inclElim)"
+           class="btn btn-sm btn-outline-secondary">
+            @(inclElim ? "Ocultar eliminados" : "Ver eliminados")
+        </a>
+    </div>
+</div>
+
+<div class="row g-4">
+    <div class="col-lg-6">
+        <div class="section-panel h-100">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <h5 class="mb-0">📍 Direcciones</h5>
+                <a asp-action="CrearDireccion" asp-route-empleadoId="@emp?.Id" class="btn btn-sm btn-success">&#43; Agregar</a>
+            </div>
+            @foreach (var d in dirs)
+            {
+                <div class="border rounded-3 p-3 mb-2 @(d.IsDeleted ? "opacity-50" : "")">
+                    <div class="d-flex justify-content-between">
+                        <div>
+                            <span class="badge bg-secondary me-1">@d.Tipo</span>
+                            @if (d.EsPrincipal)
+                            {
+                                <span class="badge bg-success">Principal</span>
+                            }
+                            @if (d.IsDeleted)
+                            {
+                                <span class="badge bg-danger ms-1">Eliminada</span>
+                            }
+                        </div>
+                        @if (!d.IsDeleted)
+                        {
+                            <div class="d-flex gap-1">
+                                <a asp-action="EditarDireccion" asp-route-id="@d.Id" class="btn btn-sm btn-warning text-dark">✏️</a>
+                                <a asp-action="EliminarDireccion" asp-route-id="@d.Id" class="btn btn-sm btn-outline-danger">🗑</a>
+                            </div>
+                        }
+                    </div>
+                    <div class="mt-1 small">@d.Provincia, @d.Canton, @d.Distrito</div>
+                    <div class="small text-muted">@d.Direccion</div>
+                </div>
+            }
+            @if (!dirs.Any())
+            {
+                <div class="text-muted small">Sin direcciones registradas.</div>
+            }
+        </div>
+    </div>
+
+    <div class="col-lg-6">
+        <div class="section-panel h-100">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <h5 class="mb-0">🆘 Contactos de emergencia</h5>
+                <a asp-action="CrearContacto" asp-route-empleadoId="@emp?.Id" class="btn btn-sm btn-success">&#43; Agregar</a>
+            </div>
+            @foreach (var c in cons)
+            {
+                <div class="border rounded-3 p-3 mb-2 @(c.IsDeleted ? "opacity-50" : "")">
+                    <div class="d-flex justify-content-between">
+                        <div>
+                            <strong>@c.Nombre</strong>
+                            <span class="badge bg-secondary ms-1">@c.Parentesco</span>
+                            @if (c.EsPrincipal)
+                            {
+                                <span class="badge bg-success ms-1">Principal</span>
+                            }
+                            @if (c.IsDeleted)
+                            {
+                                <span class="badge bg-danger ms-1">Eliminado</span>
+                            }
+                        </div>
+                        @if (!c.IsDeleted)
+                        {
+                            <div class="d-flex gap-1">
+                                <a asp-action="EditarContacto" asp-route-id="@c.Id" class="btn btn-sm btn-warning text-dark">✏️</a>
+                                <a asp-action="EliminarContacto" asp-route-id="@c.Id" class="btn btn-sm btn-outline-danger">🗑</a>
+                            </div>
+                        }
+                    </div>
+                    <div class="small mt-1">📞 @c.Telefono @(!string.IsNullOrEmpty(c.TelefonoAlt) ? $" / {c.TelefonoAlt}" : "")</div>
+                    @if (!string.IsNullOrEmpty(c.Email))
+                    {
+                        <div class="small text-muted">✉️ @c.Email</div>
+                    }
+                </div>
+            }
+            @if (!cons.Any())
+            {
+                <div class="text-muted small">Sin contactos registrados.</div>
+            }
+        </div>
+    </div>
+</div>
+
+<div class="mt-3">
+    <a asp-controller="Empleados" asp-action="Detalle" asp-route-id="@emp?.Id" class="btn btn-outline-secondary">← Volver</a>
+</div>

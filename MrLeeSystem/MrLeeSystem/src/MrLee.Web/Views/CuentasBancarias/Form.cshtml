@@ -1,0 +1,62 @@
+﻿@model MrLee.Web.Models.CuentaBancariaFormVm
+@{
+    var esEdicion = Model.CuentaId.HasValue; ViewData["Title"] = esEdicion ? "Editar cuenta" : "Nueva cuenta";
+}
+<div class="row justify-content-center">
+    <div class="col-lg-6">
+        <div class="section-panel">
+            <h5 class="mb-1">@Model.NombreEmpleado</h5>
+            <p class="text-muted small mb-4">@ViewData["Title"]</p>
+            <form asp-action="@(esEdicion ? "Editar" : "Crear")" method="post">
+                @Html.AntiForgeryToken()
+                @if (esEdicion)
+                {
+                    <input type="hidden" asp-for="CuentaId" />
+                }
+                <input type="hidden" asp-for="EmpleadoId" />
+                <input type="hidden" asp-for="NombreEmpleado" />
+                <div asp-validation-summary="All" class="alert alert-danger mb-3"></div>
+                <div class="row g-3 mb-3">
+                    <div class="col-12">
+                        <label class="form-label fw-medium">Banco <span class="text-danger">*</span></label>
+                        <input asp-for="Banco" class="form-control" placeholder="Ej: Banco Nacional de Costa Rica" />
+                        <span asp-validation-for="Banco" class="text-danger small"></span>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label fw-medium">Tipo de cuenta</label>
+                        <select asp-for="TipoCuenta" class="form-select" asp-items="Html.GetEnumSelectList<MrLee.Web.Models.TipoCuenta>()"></select>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label fw-medium">Moneda</label>
+                        <select asp-for="Moneda" class="form-select" asp-items="Html.GetEnumSelectList<MrLee.Web.Models.MonedaCuenta>()"></select>
+                    </div>
+                    <div class="col-md-7">
+                        <label class="form-label fw-medium">Número de cuenta <span class="text-danger">*</span></label>
+                        <input asp-for="NumeroCuenta" class="form-control" />
+                        <span asp-validation-for="NumeroCuenta" class="text-danger small"></span>
+                    </div>
+                    <div class="col-md-5">
+                        <label class="form-label fw-medium">IBAN</label>
+                        <input asp-for="Iban" class="form-control" placeholder="CR00..." />
+                    </div>
+                    <div class="col-12">
+                        <div class="form-check">
+                            <input asp-for="EsPrincipal" class="form-check-input" type="checkbox" />
+                            <label class="form-check-label">⭐ Marcar como cuenta principal</label>
+                        </div>
+                    </div>
+                </div>
+                <div class="d-flex gap-2 justify-content-end">
+                    <a asp-action="Index" asp-route-empleadoId="@Model.EmpleadoId" class="btn btn-outline-secondary">Cancelar</a>
+                    <button type="submit" class="btn btn-success">💾 Guardar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+
+}

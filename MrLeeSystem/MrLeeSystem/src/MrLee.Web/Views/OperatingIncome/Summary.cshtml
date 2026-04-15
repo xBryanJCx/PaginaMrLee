@@ -3,7 +3,18 @@
     ViewData["Title"] = "Resumen diario de ingresos";
 }
 
-<div class="section-panel mb-4">
+<section class="section-panel app-page-header mb-4">
+    <div class="app-title-row">
+        <div>
+            <div class="app-eyebrow mb-2">Consolidado diario</div>
+            <h2 class="h2 mb-2">Resumen diario</h2>
+            <p class="app-page-copy mb-0">Consulta el comportamiento diario de los ingresos activos dentro del rango seleccionado.</p>
+        </div>
+        <a asp-action="Index" class="btn btn-outline-secondary">Volver a ingresos</a>
+    </div>
+</section>
+
+<section class="section-panel mb-4">
     <form method="get" class="row g-3 align-items-end">
         <div class="col-md-4">
             <label class="form-label">Desde</label>
@@ -14,38 +25,66 @@
             <input type="date" class="form-control" name="to" value="@ViewBag.To" />
         </div>
         <div class="col-md-4 d-grid">
-            <button class="btn btn-primary">Actualizar resumen</button>
+            <button class="btn btn-primary" type="submit">Actualizar resumen</button>
         </div>
     </form>
-</div>
+</section>
 
-<div class="section-panel">
-    <div class="table-responsive">
-        <table class="table table-striped align-middle">
-            <thead>
-                <tr>
-                    <th>Fecha</th>
-                    <th class="text-end">Registros</th>
-                    <th class="text-end">Monto</th>
-                </tr>
-            </thead>
-            <tbody>
-            @foreach (var row in Model)
-            {
-                <tr>
-                    <td>@row.Date.ToString("dd/MM/yyyy")</td>
-                    <td class="text-end">@row.Count</td>
-                    <td class="text-end">₡ @row.Amount.ToString("N2")</td>
-                </tr>
-            }
-            </tbody>
-            <tfoot>
-                <tr>
-                    <th>Total</th>
-                    <th></th>
-                    <th class="text-end">₡ @(((decimal)ViewBag.GrandTotal).ToString("N2"))</th>
-                </tr>
-            </tfoot>
-        </table>
+<section class="row g-4 mb-4">
+    <div class="col-md-6">
+        <div class="kpi-card">
+            <div class="kpi-card__label">Dias visibles</div>
+            <div class="kpi-card__value">@ViewBag.RowCount</div>
+            <div class="kpi-card__note">Cantidad de dias con movimientos dentro del rango consultado.</div>
+        </div>
     </div>
-</div>
+    <div class="col-md-6">
+        <div class="kpi-card">
+            <div class="kpi-card__label">Monto acumulado</div>
+            <div class="kpi-card__value">&#8353; @(((decimal)ViewBag.GrandTotal).ToString("N2"))</div>
+            <div class="kpi-card__note">Suma total de ingresos activos para el periodo mostrado.</div>
+        </div>
+    </div>
+</section>
+
+<section class="section-panel">
+    @if (Model.Any())
+    {
+        <div class="table-responsive">
+            <table class="table table-striped align-middle mb-0">
+                <thead>
+                    <tr>
+                        <th>Fecha</th>
+                        <th class="text-end">Registros</th>
+                        <th class="text-end">Monto</th>
+                    </tr>
+                </thead>
+                <tbody>
+                @foreach (var row in Model)
+                {
+                    <tr>
+                        <td>@row.Date.ToString("dd/MM/yyyy")</td>
+                        <td class="text-end">@row.Count</td>
+                        <td class="text-end">&#8353; @row.Amount.ToString("N2")</td>
+                    </tr>
+                }
+                </tbody>
+                <tfoot>
+                    <tr>
+                        <th>Total</th>
+                        <th></th>
+                        <th class="text-end">&#8353; @(((decimal)ViewBag.GrandTotal).ToString("N2"))</th>
+                    </tr>
+                </tfoot>
+            </table>
+        </div>
+    }
+    else
+    {
+        <partial name="_EmptyMessage" model='new EmptyMessageVm
+        {
+            Title = "Sin datos para resumir",
+            Message = "No hay ingresos activos dentro del rango seleccionado."
+        }' />
+    }
+</section>

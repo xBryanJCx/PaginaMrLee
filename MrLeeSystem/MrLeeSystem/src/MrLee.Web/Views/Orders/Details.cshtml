@@ -4,76 +4,83 @@
 }
 
 <div class="d-flex justify-content-between align-items-start mb-3">
-    <div>
-        <h2 class="h4 m-0">Pedido: <span class="text-primary">@Model.TrackingNumber</span></h2>
-        <div class="text-muted">Estado: <strong>@Model.Status</strong> | Creado: @Model.CreatedAtUtc.ToString("yyyy-MM-dd HH:mm") (UTC)</div>
-    </div>
-    <div class="d-flex gap-2">
-        <a class="btn btn-outline-primary" asp-action="UpdateStatus" asp-route-id="@Model.Id">Actualizar estado</a>
-        <form asp-action="Delete" asp-route-id="@Model.Id" method="post" class="m-0" onsubmit="return confirm('¿Eliminar el pedido?');">
-            @Html.AntiForgeryToken()
-            <button class="btn btn-outline-danger" type="submit">Eliminar</button>
-        </form>
-        <a class="btn btn-outline-secondary" asp-action="Index">Volver</a>
-    </div>
+  <div>
+    <h2 class="h4 m-0">Pedido: <span class="text-primary">@Model.TrackingNumber</span></h2>
+    <div class="text-muted">Estado: <strong>@Model.Status</strong> | Creado: @Model.CreatedAtUtc.ToString("yyyy-MM-dd HH:mm") (UTC)</div>
+  </div>
+  <div class="d-flex gap-2">
+    <a class="btn btn-outline-primary" asp-action="UpdateStatus" asp-route-id="@Model.Id">Actualizar estado</a>
+    <form asp-action="Delete"
+          asp-route-id="@Model.Id"
+          method="post"
+          class="m-0 js-confirm-form"
+          data-confirm-title="&#191;Est&aacute;s seguro?"
+          data-confirm-message="Esta acci&oacute;n no se puede deshacer."
+          data-confirm-button="Eliminar"
+          data-confirm-button-class="btn-danger">
+      @Html.AntiForgeryToken()
+      <button class="btn btn-outline-danger" type="submit">Eliminar</button>
+    </form>
+    <a class="btn btn-outline-primary" asp-action="Index">Volver</a>
+  </div>
 </div>
 
 <div class="row">
-    <div class="col-md-6">
-        <div class="card mb-3">
-            <div class="card-body">
-                <h3 class="h6">Cliente</h3>
-                <div><strong>@Model.CustomerName</strong></div>
-                <div>@Model.CustomerPhone</div>
-                <div class="mt-2"><strong>Dirección:</strong> @Model.DeliveryAddress</div>
-                @if (!string.IsNullOrWhiteSpace(Model.Notes))
-                {
-                    <div class="mt-2"><strong>Notas:</strong> @Model.Notes</div>
-                }
-            </div>
-        </div>
-
-        <div class="card">
-            <div class="card-body">
-                <h3 class="h6">Items</h3>
-                <table class="table table-sm mb-0">
-                    <thead><tr><th>Producto</th><th class="text-end">Cantidad</th><th class="text-end">Precio</th></tr></thead>
-                    <tbody>
-                        @foreach (var it in Model.Items)
-                        {
-                            <tr>
-                                <td>@it.Product?.Name</td>
-                                <td class="text-end">@it.Quantity.ToString("N2")</td>
-                                <td class="text-end">@it.UnitPrice.ToString("N2")</td>
-                            </tr>
-                        }
-                    </tbody>
-                </table>
-            </div>
-        </div>
+  <div class="col-md-6">
+    <div class="card mb-3">
+      <div class="card-body">
+        <h3 class="h6">Cliente</h3>
+        <div><strong>@Model.CustomerName</strong></div>
+        <div>@Model.CustomerPhone</div>
+        <div class="mt-2"><strong>Direccion:</strong> @Model.DeliveryAddress</div>
+        @if (!string.IsNullOrWhiteSpace(Model.Notes))
+        {
+            <div class="mt-2"><strong>Notas:</strong> @Model.Notes</div>
+        }
+      </div>
     </div>
 
-    <div class="col-md-6">
-        <div class="card">
-            <div class="card-body">
-                <h3 class="h6">Historial / timeline</h3>
-                <ul class="list-group list-group-flush">
-                    @foreach (var h in Model.History.OrderByDescending(x => x.AtUtc))
-                    {
-                        <li class="list-group-item">
-                            <div class="d-flex justify-content-between">
-                                <strong>@h.Status</strong>
-                                <span class="text-muted">@h.AtUtc.ToString("yyyy-MM-dd HH:mm")</span>
-                            </div>
-                            @if (!string.IsNullOrWhiteSpace(h.Comment))
-                            {
-                                <div>@h.Comment</div>
-                            }
-                            <div class="small text-muted">@h.ChangedByEmail</div>
-                        </li>
-                    }
-                </ul>
-            </div>
-        </div>
+    <div class="card">
+      <div class="card-body">
+        <h3 class="h6">Items</h3>
+        <table class="table table-sm mb-0">
+          <thead><tr><th>Producto</th><th class="text-end">Cantidad</th><th class="text-end">Precio</th></tr></thead>
+          <tbody>
+          @foreach (var it in Model.Items)
+          {
+            <tr>
+              <td>@it.Product?.Name</td>
+              <td class="text-end">@it.Quantity.ToString("N2")</td>
+              <td class="text-end">@it.UnitPrice.ToString("N2")</td>
+            </tr>
+          }
+          </tbody>
+        </table>
+      </div>
     </div>
+  </div>
+
+  <div class="col-md-6">
+    <div class="card">
+      <div class="card-body">
+        <h3 class="h6">Historial / timeline</h3>
+        <ul class="list-group list-group-flush">
+        @foreach (var h in Model.History.OrderByDescending(x => x.AtUtc))
+        {
+          <li class="list-group-item">
+            <div class="d-flex justify-content-between">
+              <strong>@h.Status</strong>
+              <span class="text-muted">@h.AtUtc.ToString("yyyy-MM-dd HH:mm")</span>
+            </div>
+            @if (!string.IsNullOrWhiteSpace(h.Comment))
+            {
+              <div>@h.Comment</div>
+            }
+            <div class="small text-muted">@h.ChangedByEmail</div>
+          </li>
+        }
+        </ul>
+      </div>
+    </div>
+  </div>
 </div>

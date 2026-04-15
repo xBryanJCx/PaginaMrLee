@@ -1,0 +1,77 @@
+﻿@model MrLee.Web.Models.MisPedidosVm
+@{
+    ViewData["Title"] = "Mis pedidos";
+    Layout = "~/Views/Portal/_LayoutPortal.cshtml";
+}
+<div class="container py-4">
+    <h4 class="mb-4" style="color:var(--primary);">📦 Mis pedidos</h4>
+
+    <div class="portal-card p-3 mb-4">
+        <form method="get" class="row g-2 align-items-end">
+            <div class="col-md-3">
+                <label class="form-label small fw-medium">Desde</label>
+                <input type="date" class="form-control" name="fechaInicio" value="@Model.FechaInicio?.ToString("yyyy-MM-dd")" />
+            </div>
+            <div class="col-md-3">
+                <label class="form-label small fw-medium">Hasta</label>
+                <input type="date" class="form-control" name="fechaFin" value="@Model.FechaFin?.ToString("yyyy-MM-dd")" />
+            </div>
+            <div class="col-md-3">
+                <label class="form-label small fw-medium">Estado</label>
+                <select class="form-select" name="estado">
+                    <option value="">Todos</option>
+                    @foreach (var s in Enum.GetValues<MrLee.Web.Models.OrderStatus>())
+                    {
+                        <option value="@s" selected="@(Model.Estado == s)">@s</option>
+                    }
+                </select>
+            </div>
+            <div class="col-md-2">
+                <button class="btn btn-info text-white w-100">🔍 Buscar</button>
+            </div>
+        </form>
+    </div>
+
+    @if (!Model.Pedidos.Any())
+    {
+        <div class="portal-card p-5 text-center text-muted">
+            <div style="font-size:3rem">📭</div>
+            <p class="mt-3">No encontramos pedidos con ese filtro.</p>
+        </div>
+    }
+    else
+    {
+        <div class="portal-card">
+            <table class="table table-hover align-middle mb-0">
+                <thead>
+                    <tr><th>Tracking</th><th>Fecha</th><th>Estado</th><th>Items</th><th></th></tr>
+                </thead>
+                <tbody>
+                    @foreach (var p in Model.Pedidos)
+                    {
+                        <tr>
+                            <td><strong>@p.TrackingNumber</strong></td>
+                            <td>@p.CreatedAtUtc.ToString("dd/MM/yyyy")</td>
+                            <td>
+                                @{
+                                    var badge = p.Status switch
+                                    {
+                                        MrLee.Web.Models.OrderStatus.Recibido => "bg-warning text-dark",
+                                        MrLee.Web.Models.OrderStatus.EnPreparacion => "bg-info text-white",
+                                        MrLee.Web.Models.OrderStatus.EnRuta => "bg-primary",
+                                        MrLee.Web.Models.OrderStatus.Entregado => "bg-success",
+                                        MrLee.Web.Models.OrderStatus.Cancelado => "bg-danger",
+                                        _ => "bg-secondary"
+                                    };
+                                }
+                                <span class="badge @badge">@p.Status</span>
+                            </td>
+                            <td>@p.Items.Count item(s)</td>
+                            <td><a asp-action="DetallePedido" asp-route-id="@p.Id" class="btn btn-sm btn-primary">Ver detalle</a></td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    }
+</div>

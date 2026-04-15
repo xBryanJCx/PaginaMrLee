@@ -7,40 +7,37 @@
 <h2 class="h4">Crear usuario</h2>
 
 <form method="post">
-    @Html.AntiForgeryToken()
-    <div asp-validation-summary="All" class="text-danger"></div>
+  @Html.AntiForgeryToken()
+  <div asp-validation-summary="All" class="text-danger"></div>
 
-    <div class="row">
-        <div class="col-md-6 mb-3">
-            <label class="form-label">Nombre completo</label>
-            <input asp-for="FullName" class="form-control" />
-            <span asp-validation-for="FullName" class="text-danger"></span>
-        </div>
-        <div class="col-md-6 mb-3">
-            <label class="form-label">Correo</label>
-            <input asp-for="Email" class="form-control" />
-            <span asp-validation-for="Email" class="text-danger"></span>
-        </div>
+  <div class="row">
+    <div class="col-md-6 mb-3">
+      <label class="form-label">Nombre completo</label>
+      <input asp-for="FullName" class="form-control" />
+      <span asp-validation-for="FullName" class="text-danger"></span>
     </div>
-
-    <div class="row">
-        <div class="col-md-6 mb-3">
-            <label class="form-label">Rol</label>
-            <select asp-for="RoleId" class="form-select">
-                @foreach (var r in roles)
-                {
-                    <option value="@r.Id">@r.Name</option>
-                }
-            </select>
-            <span asp-validation-for="RoleId" class="text-danger"></span>
-        </div>
-        <div class="col-md-6 mb-3">
-            <label class="form-label">Contraseña inicial</label>
-            <input asp-for="Password" type="password" class="form-control" />
-            <span asp-validation-for="Password" class="text-danger"></span>
-        </div>
+    <div class="col-md-6 mb-3">
+      <label class="form-label">Correo</label>
+      <input asp-for="Email" class="form-control" />
+      <span asp-validation-for="Email" class="text-danger"></span>
     </div>
+  </div>
 
-    <button class="btn btn-primary" type="submit">Guardar</button>
-    <a class="btn btn-outline-secondary" asp-action="Index">Cancelar</a>
+  <div class="row">
+    <div class="col-md-6 mb-3">
+      <label class="form-label">Rol</label>
+      <select asp-for="RoleId" class="form-select">
+        @foreach (var r in roles) { <option value="@r.Id">@r.Name</option> }
+      </select>
+      <span asp-validation-for="RoleId" class="text-danger"></span>
+    </div>
+    <div class="col-md-6 mb-3">
+      <label class="form-label">Contraseña inicial</label>
+      <input asp-for="Password" type="password" class="form-control" />
+      <span asp-validation-for="Password" class="text-danger"></span>
+    </div>
+  </div>
+
+  <button class="btn btn-primary" type="submit">Guardar</button>
+    <a class="btn btn-outline-primary" asp-action="Index">Cancelar</a>
 </form>

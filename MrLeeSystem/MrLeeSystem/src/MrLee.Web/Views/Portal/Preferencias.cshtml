@@ -1,0 +1,59 @@
+﻿@model MrLee.Web.Models.PreferenciasNotificacionVm
+@{
+    ViewData["Title"] = "Notificaciones";
+    Layout = "~/Views/Portal/_LayoutPortal.cshtml";
+}
+<div class="container py-4">
+    <div class="row justify-content-center">
+        <div class="col-lg-6">
+            <div class="portal-card p-4">
+                <h4 class="mb-4" style="color:var(--primary);">🔔 Preferencias de notificación</h4>
+                <form asp-action="Preferencias" method="post">
+                    @Html.AntiForgeryToken()
+                    <div class="mb-4">
+                        <h6 class="text-muted mb-3">Canales activos</h6>
+                        <div class="form-check mb-2">
+                            <input asp-for="NotiEmail" class="form-check-input" type="checkbox" />
+                            <label class="form-check-label">✉️ Notificaciones por correo</label>
+                        </div>
+                        <div class="form-check mb-2">
+                            <input asp-for="NotiSms" class="form-check-input" type="checkbox" />
+                            <label class="form-check-label">💬 Notificaciones por SMS</label>
+                        </div>
+                        <div class="form-check">
+                            <input asp-for="NotiWhatsapp" class="form-check-input" type="checkbox" />
+                            <label class="form-check-label">📱 Notificaciones por WhatsApp</label>
+                        </div>
+                    </div>
+                    <hr />
+                    <h6 class="text-muted mb-3">🌙 Horario de silencio</h6>
+                    <div class="row g-3 mb-4">
+                        <div class="col-6">
+                            <label class="form-label fw-medium">Desde</label>
+                            <input asp-for="HoraSilencioInicio" class="form-control" type="time" />
+                        </div>
+                        <div class="col-6">
+                            <label class="form-label fw-medium">Hasta</label>
+                            <input asp-for="HoraSilencioFin" class="form-control" type="time" />
+                        </div>
+                    </div>
+                    <div class="d-flex gap-2 justify-content-end">
+                        <button type="submit" class="btn btn-success">💾 Guardar</button>
+                    </div>
+                </form>
+                <hr />
+                <form asp-action="RestablecerPreferencias" method="post">
+                    @Html.AntiForgeryToken()
+                    <button type="submit" class="btn btn-outline-secondary w-100"
+                            onclick="return confirm('¿Restablecer preferencias por defecto?')">
+                        🔄 Restablecer valores por defecto
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+@* ── DESACTIVAR CUENTA ── *@
+@* Guardar como Views/Portal/DesactivarCuenta.cshtml *@

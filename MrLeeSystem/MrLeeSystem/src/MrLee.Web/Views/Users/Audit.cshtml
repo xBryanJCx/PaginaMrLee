@@ -5,30 +5,32 @@
 
 <h2 class="h4">Bitácora de acciones (últimos 500)</h2>
 
-<table class="table table-striped table-sm align-middle">
-    <thead>
-        <tr>
-            <th>Fecha (UTC)</th>
-            <th>Usuario</th>
-            <th>Acción</th>
-            <th>Entidad</th>
-            <th>Id</th>
-            <th>IP</th>
-        </tr>
-    </thead>
-    <tbody>
-        @foreach (var l in Model)
-        {
-            <tr>
-                <td class="text-nowrap">@l.AtUtc.ToString("yyyy-MM-dd HH:mm")</td>
-                <td>@l.ActorEmail</td>
-                <td>@l.Action</td>
-                <td>@l.Entity</td>
-                <td>@l.EntityId</td>
-                <td>@l.IpAddress</td>
-            </tr>
-        }
-    </tbody>
-</table>
+<div class="table-responsive section-panel">
+  <table class="table table-striped table-sm align-middle mb-0">
+  <thead>
+    <tr>
+      <th>Fecha (UTC)</th>
+      <th>Usuario</th>
+      <th>Acción</th>
+      <th>Entidad</th>
+      <th>Id</th>
+      <th>IP</th>
+    </tr>
+  </thead>
+  <tbody>
+  @foreach (var l in Model)
+  {
+    <tr>
+      <td class="text-nowrap">@l.AtUtc.ToString("yyyy-MM-dd HH:mm")</td>
+      <td>@l.ActorEmail</td>
+      <td>@l.Action</td>
+      <td>@l.Entity</td>
+      <td>@l.EntityId</td>
+      <td>@l.IpAddress</td>
+    </tr>
+  }
+  </tbody>
+  </table>
+</div>
 
 <div class="small text-muted">Detalle JSON se guarda en la columna DetailJson (por si se requiere auditoría avanzada).</div>

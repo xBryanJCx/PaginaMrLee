@@ -2,55 +2,88 @@
 @{
     ViewData["Title"] = "Pedidos";
     MrLee.Web.Models.OrderStatus? status = ViewBag.Status;
+    var hasFiltersApplied =
+        !string.IsNullOrWhiteSpace(ViewBag.Query as string) ||
+        status.HasValue;
 }
 
 <div class="d-flex justify-content-between align-items-center mb-3">
-    <h2 class="h4 m-0">Seguimiento de pedidos</h2>
-    <a class="btn btn-success" asp-action="Create">&#43; Nuevo pedido</a>
+  <h2 class="h4 m-0">Seguimiento de pedidos</h2>
+  <a class="btn btn-primary" asp-action="Create">Nuevo pedido</a>
 </div>
 
 <form class="row g-2 mb-3" method="get">
-    <div class="col-md-5">
-        <input name="q" value="@ViewBag.Query" class="form-control" placeholder="Tracking, nombre o teléfono..." />
-    </div>
-    <div class="col-md-3">
-        <select name="status" class="form-select">
-            <option value="">(Todos los estados)</option>
-            @foreach (MrLee.Web.Models.OrderStatus s in Enum.GetValues(typeof(MrLee.Web.Models.OrderStatus)))
-            {
-                <option value="@s" selected="@(status.HasValue && status.Value == s)">@s</option>
-            }
-        </select>
-    </div>
-    <div class="col-md-2">
-        <button class="btn btn-info text-white w-100" type="submit">🔍 Filtrar</button>
-    </div>
+  <div class="col-md-5">
+    <input name="q" value="@ViewBag.Query" class="form-control" placeholder="Tracking, nombre o telefono..." />
+  </div>
+  <div class="col-md-3">
+    <select name="status" class="form-select">
+      <option value="">(Todos los estados)</option>
+      @foreach (MrLee.Web.Models.OrderStatus s in Enum.GetValues(typeof(MrLee.Web.Models.OrderStatus)))
+      {
+        <option value="@s" selected="@(status.HasValue && status.Value == s)">@s</option>
+      }
+    </select>
+  </div>
+  <div class="col-md-2">
+    <button class="btn btn-info text-white w-100" type="submit">Filtrar</button>
+  </div>
 </form>
 
-<table class="table table-striped table-sm align-middle">
-    <thead>
+@if (Model.Any())
+{
+  <div class="table-responsive section-panel">
+    <table class="table table-striped table-sm align-middle mb-0">
+      <thead>
         <tr>
-            <th>Tracking</th>
-            <th>Cliente</th>
-            <th>Teléfono</th>
-            <th>Estado</th>
-            <th>Creado (UTC)</th>
-            <th style="width: 140px;"></th>
+          <th>Tracking</th>
+          <th>Cliente</th>
+          <th>Telefono</th>
+          <th>Estado</th>
+          <th>Creado (UTC)</th>
+          <th style="width: 140px;"></th>
         </tr>
-    </thead>
-    <tbody>
-        @foreach (var o in Model)
-        {
-            <tr>
-                <td><strong>@o.TrackingNumber</strong></td>
-                <td>@o.CustomerName</td>
-                <td>@o.CustomerPhone</td>
-                <td>@o.Status</td>
-                <td class="text-nowrap">@o.CreatedAtUtc.ToString("yyyy-MM-dd HH:mm")</td>
-                <td class="text-end">
-                    <a class="btn btn-sm btn-primary" asp-action="Details" asp-route-id="@o.Id">Ver</a>
-                </td>
-            </tr>
-        }
-    </tbody>
-</table>
+      </thead>
+      <tbody>
+      @foreach (var o in Model)
+      {
+        <tr>
+          <td><strong>@o.TrackingNumber</strong></td>
+          <td>@o.CustomerName</td>
+          <td>@o.CustomerPhone</td>
+          <td>@o.Status</td>
+          <td class="text-nowrap">@o.CreatedAtUtc.ToString("yyyy-MM-dd HH:mm")</td>
+          <td class="text-end">
+            <a class="btn btn-sm btn-outline-primary" asp-action="Details" asp-route-id="@o.Id">Ver</a>
+          </td>
+        </tr>
+      }
+      </tbody>
+    </table>
+  </div>
+}
+else
+{
+  @if (hasFiltersApplied)
+  {
+    <partial name="_EmptyMessage" model='new EmptyMessageVm
+    {
+        Variant = "search",
+        Title = "No encontramos pedidos",
+        Message = "No hay pedidos que coincidan con tu busqueda o filtros actuales.",
+        SupportText = "Prueba con otro tracking, nombre, telefono o estado. Tambien puedes limpiar los filtros para volver a ver todo.",
+        ActionText = "Limpiar filtros",
+        ActionUrl = Url.Action("Index")!
+    }' />
+  }
+  else
+  {
+    <partial name="_EmptyMessage" model='new EmptyMessageVm
+    {
+        Title = "Sin pedidos registrados",
+        Message = "Todavia no hay pedidos creados en el sistema.",
+        ActionText = "Nuevo pedido",
+        ActionUrl = Url.Action("Create")!
+    }' />
+  }
+}

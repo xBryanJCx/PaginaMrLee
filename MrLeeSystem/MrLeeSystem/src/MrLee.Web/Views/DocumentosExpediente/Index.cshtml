@@ -1,0 +1,49 @@
+﻿@model List<MrLee.Web.Models.DocumentoExpediente>
+@{
+    ViewData["Title"] = "Expediente digital";
+    var emp = ViewBag.Empleado as MrLee.Web.Models.Empleado;
+}
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <h4 class="mb-0">Expediente — @emp?.Nombre @emp?.Apellido</h4>
+    <a asp-action="Subir" asp-route-empleadoId="@emp?.Id" class="btn btn-success">⬆ Subir documento</a>
+</div>
+<div class="mb-3 d-flex gap-2 flex-wrap">
+    <a asp-action="Index" asp-route-empleadoId="@emp?.Id" class="btn btn-sm @(ViewBag.Tipo == null ? "btn-primary" : "btn-outline-secondary")">Todos</a>
+    @foreach (var tipo in Enum.GetValues<MrLee.Web.Models.TipoDocumentoExpediente>())
+    {
+        <a asp-action="Index" asp-route-empleadoId="@emp?.Id" asp-route-tipo="@tipo"
+           class="btn btn-sm @((MrLee.Web.Models.TipoDocumentoExpediente?)ViewBag.Tipo == tipo ? "btn-primary" : "btn-outline-secondary")">
+            @tipo
+        </a>
+    }
+</div>
+<div class="section-panel">
+    <table class="table table-hover align-middle mb-0">
+        <thead>
+            <tr><th>Tipo</th><th>Archivo</th><th>Versión</th><th>Subido</th><th>Por</th><th></th></tr>
+        </thead>
+        <tbody>
+            @foreach (var d in Model)
+            {
+                <tr>
+                    <td><span class="badge bg-secondary">@d.DocumentoTipo</span></td>
+                    <td>@d.NombreArchivo</td>
+                    <td>v@d.Version</td>
+                    <td>@d.CreatedAtUtc.ToString("dd/MM/yyyy HH:mm")</td>
+                    <td class="small text-muted">@d.CreatedByEmail</td>
+                    <td class="text-end">
+                        <a asp-action="Descargar" asp-route-id="@d.Id" class="btn btn-sm btn-outline-info">⬇ Descargar</a>
+                        <a asp-action="Eliminar" asp-route-id="@d.Id" class="btn btn-sm btn-outline-danger">🗑 Eliminar</a>
+                    </td>
+                </tr>
+            }
+            @if (!Model.Any())
+            {
+                <tr><td colspan="6" class="text-center text-muted py-4">Sin documentos.</td></tr>
+            }
+        </tbody>
+    </table>
+</div>
+<div class="mt-3">
+    <a asp-controller="Empleados" asp-action="Detalle" asp-route-id="@emp?.Id" class="btn btn-outline-secondary">← Volver</a>
+</div>

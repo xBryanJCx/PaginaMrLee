@@ -1,0 +1,32 @@
+﻿@model MrLee.Web.Models.EliminarDocumentoVm
+@{
+    ViewData["Title"] = "Eliminar documento";
+}
+<div class="row justify-content-center">
+    <div class="col-lg-5">
+        <div class="section-panel">
+            <h5 class="mb-3 text-danger">⚠️ Eliminar documento</h5>
+            <form asp-action="Eliminar" method="post">
+                @Html.AntiForgeryToken()
+                <input type="hidden" asp-for="DocumentoId" />
+                <input type="hidden" asp-for="EmpleadoId" />
+                <div asp-validation-summary="All" class="alert alert-danger mb-3"></div>
+                <div class="mb-4">
+                    <label class="form-label fw-medium">Motivo de eliminación <span class="text-danger">*</span></label>
+                    <textarea asp-for="MotivoEliminacion" class="form-control" rows="3" maxlength="300"></textarea>
+                    <span asp-validation-for="MotivoEliminacion" class="text-danger small"></span>
+                </div>
+                <div class="d-flex gap-2 justify-content-end">
+                    <a asp-action="Index" asp-route-empleadoId="@Model.EmpleadoId" class="btn btn-outline-secondary">Cancelar</a>
+                    <button type="submit" class="btn btn-danger">🗑 Confirmar eliminación</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+
+}

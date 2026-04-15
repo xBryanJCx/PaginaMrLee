@@ -1,80 +1,74 @@
 @model MrLee.Web.Controllers.LoginVm
 @{
-    ViewData["Title"] = "Iniciar sesión";
-    Layout = null;
+    ViewData["Title"] = "Iniciar sesion";
+    Layout = "_Layout";
+    var returnUrl = ViewBag.ReturnUrl as string;
 }
-<!doctype html>
-<html lang="es">
-<head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Iniciar sesión - Mr Lee</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&family=Playfair+Display:wght@600;700;800&display=swap" rel="stylesheet">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
-    <link href="/theme/css/site.css" rel="stylesheet" />
-    <style>
-        body {
-            min-height: 100vh;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            background: linear-gradient(135deg, #1E1916 0%, #3a2e28 100%);
-        }
-    </style>
-</head>
-<body>
-    <div class="container">
-        <div class="row justify-content-center">
-            <div class="col-xl-9 col-lg-10">
-                <div class="card shadow-lg border-0 rounded-4 overflow-hidden">
-                    <div class="row g-0">
-                        <div class="col-lg-5 d-none d-lg-block">
-                            <div class="login-visual h-100 d-flex flex-column justify-content-end">
-                                <div class="text-uppercase fw-bold small mb-2" style="color:var(--primary); letter-spacing:.12rem;">Bienvenido</div>
-                                <h2 class="display-6 mb-3" style="color:#fff;">Mr Lee System</h2>
-                                <p class="mb-0" style="color:rgba(255,255,255,.8);">Accede al panel administrativo con la identidad visual del sistema.</p>
-                            </div>
+
+<div class="login-shell">
+    <div class="login-card shadow-lg">
+        <div class="row g-0">
+            <div class="col-lg-6">
+                <div class="login-visual">
+                    <div class="login-visual-content">
+                        <div class="login-eyebrow">Bienvenido</div>
+                        <h1 class="login-visual-title">Mr Lee System</h1>
+                        <p class="login-visual-text mb-0">Accede al panel administrativo con la nueva identidad visual integrada desde el template.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-6">
+                <div class="login-panel">
+                    <div class="mb-4">
+                        <div class="login-eyebrow">Acceso interno</div>
+                        <h2 class="login-title">Iniciar sesion</h2>
+                        <p class="login-panel-copy mb-0">Este acceso corresponde al personal administrativo del sistema.</p>
+                    </div>
+
+                    <form asp-action="Login" asp-route-returnUrl="@returnUrl" method="post" class="login-form">
+                        @Html.AntiForgeryToken()
+
+                        <div asp-validation-summary="All" class="alert alert-danger login-summary" role="alert"></div>
+
+                        <div class="mb-3">
+                            <label asp-for="Email" class="form-label login-label">Correo</label>
+                            <input asp-for="Email" class="form-control login-input" type="email" autocomplete="username" placeholder="admin@mrlee.com" />
+                            <span asp-validation-for="Email" class="text-danger small"></span>
                         </div>
-                        <div class="col-lg-7 bg-white">
-                            <div class="card-body p-4 p-lg-5">
-                                <div class="text-center mb-4">
-                                    <div class="text-uppercase fw-bold small mb-1" style="color:var(--primary); letter-spacing:.12rem;">Acceso</div>
-                                    <h2 class="h3 mb-0">Iniciar sesión</h2>
-                                </div>
 
-                                <form method="post">
-                                    @Html.AntiForgeryToken()
-                                    <div asp-validation-summary="All" class="text-danger mb-3"></div>
+                        <div class="mb-2">
+                            <label asp-for="Password" class="form-label login-label">Contrasena</label>
+                            <input asp-for="Password" class="form-control login-input" type="password" autocomplete="current-password" placeholder="********" />
+                            <span asp-validation-for="Password" class="text-danger small"></span>
+                        </div>
 
-                                    <div class="mb-3">
-                                        <label class="form-label fw-medium">Correo electrónico</label>
-                                        <input asp-for="Email" class="form-control" placeholder="ejemplo@mrlee.local" />
-                                        <span asp-validation-for="Email" class="text-danger small"></span>
-                                    </div>
+                        <button class="btn btn-primary w-100 login-submit" type="submit">Entrar como personal interno</button>
 
-                                    <div class="mb-4">
-                                        <label class="form-label fw-medium">Contraseña</label>
-                                        <input asp-for="Password" type="password" class="form-control" placeholder="••••••••" />
-                                        <span asp-validation-for="Password" class="text-danger small"></span>
-                                    </div>
+                        <div class="login-link-row">
+                            <a asp-action="ForgotPassword">Olvido su contrasena?</a>
+                        </div>
+                    </form>
 
-                                    <button class="btn btn-primary w-100 py-2 fw-semibold" type="submit" style="font-size:1rem;">
-                                        Entrar al sistema
-                                    </button>
+                    <div class="login-divider"></div>
 
-                                    <div class="text-center mt-3">
-                                        <a asp-action="ForgotPassword" class="small text-decoration-none" style="color:var(--primary);">¿Olvidó su contraseña?</a>
-                                    </div>
-                                </form>
-                            </div>
+                    <div class="login-secondary">
+                        <div class="login-eyebrow">Sitio para clientes</div>
+                        <p>Si vienes como cliente para consultar pedidos o administrar tu cuenta, entra aqui directamente.</p>
+
+                        <div class="d-grid gap-3">
+                            <a asp-controller="Portal" asp-action="Login" class="btn login-secondary-btn">Entrar como cliente</a>
+                            <a asp-controller="Portal" asp-action="Registro" class="btn login-create-btn">Crear cuenta de cliente</a>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
     </div>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-</body>
-</html>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

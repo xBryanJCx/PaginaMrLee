@@ -1,0 +1,46 @@
+﻿@model List<MrLee.Web.Models.SolicitudVacacion>
+@{
+    ViewData["Title"] = "Solicitudes pendientes";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <h4 class="m-0">Solicitudes pendientes de aprobación <span class="badge bg-warning text-dark ms-1">@Model.Count</span></h4>
+</div>
+
+<div class="section-panel">
+    <table class="table table-hover align-middle mb-0">
+        <thead>
+            <tr>
+                <th>#</th>
+                <th>Empleado</th>
+                <th>Fecha inicio</th>
+                <th>Fecha fin</th>
+                <th>Días</th>
+                <th>Tipo</th>
+                <th>Solicitado</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var s in Model)
+            {
+                <tr>
+                    <td>@s.Id</td>
+                    <td>@s.Empleado.Nombre @s.Empleado.Apellido</td>
+                    <td>@s.FechaInicio.ToString("dd/MM/yyyy")</td>
+                    <td>@s.FechaFin.ToString("dd/MM/yyyy")</td>
+                    <td>@s.DiasSolicitados</td>
+                    <td>@s.TipoDia</td>
+                    <td>@s.CreatedAtUtc.ToString("dd/MM/yyyy")</td>
+                    <td>
+                        <a asp-action="Revisar" asp-route-id="@s.Id" class="btn btn-sm btn-primary">Revisar</a>
+                    </td>
+                </tr>
+            }
+            @if (!Model.Any())
+            {
+                <tr><td colspan="8" class="text-center text-muted py-4">No hay solicitudes pendientes.</td></tr>
+            }
+        </tbody>
+    </table>
+</div>

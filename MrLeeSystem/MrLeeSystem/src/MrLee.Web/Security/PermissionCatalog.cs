@@ -19,11 +19,16 @@ public static class PermissionCatalog
     public const string ING_MANAGE = "ING.MANAGE";
     public const string ING_AUDIT = "ING.AUDIT";
 
+    public const string RRHH_VIEW = "RRHH.VIEW";
+    public const string RRHH_MANAGE = "RRHH.MANAGE";
+    public const string RRHH_VACACIONES = "RRHH.VACACIONES";
+
     public static readonly string[] All = new[]
     {
         USERS_VIEW, USERS_MANAGE, USERS_AUDIT,
         INV_VIEW, INV_MANAGE, INV_MOVEMENTS,
         ORD_VIEW, ORD_MANAGE, ORD_STATUS,
-        ING_VIEW, ING_MANAGE, ING_AUDIT
+        ING_VIEW, ING_MANAGE, ING_AUDIT,
+        RRHH_VIEW, RRHH_MANAGE, RRHH_VACACIONES
     };
 }

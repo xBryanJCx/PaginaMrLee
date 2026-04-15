@@ -1,69 +1,387 @@
+@using MrLee.Web.Models
 @model MrLee.Web.Controllers.OrderCreateVm
 @{
     ViewData["Title"] = "Crear pedido";
-    var products = (List<MrLee.Web.Models.Product>)ViewBag.Products;
+    var products = ViewBag.Products as List<Product> ?? new();
+    var customers = ViewBag.Customers as List<Cliente> ?? new();
+
+    string BuildCustomerName(Cliente customer) => $"{customer.Nombre} {customer.Apellido}".Trim();
+
+    string BuildCustomerAddress(Cliente customer)
+    {
+        var address = customer.Direcciones.FirstOrDefault(d => d.EsPrincipal) ?? customer.Direcciones.FirstOrDefault();
+        if (address == null)
+        {
+            return string.Empty;
+        }
+
+        var parts = new[] { address.Direccion, address.Distrito, address.Canton, address.Provincia };
+        return string.Join(", ", parts.Where(part => !string.IsNullOrWhiteSpace(part)).Select(part => part.Trim()));
+    }
 }
 
-<h2 class="h4">Crear pedido</h2>
+<style>
+    .order-create-panel {
+        padding: 2rem;
+    }
 
-<form method="post">
-    @Html.AntiForgeryToken()
-    <div asp-validation-summary="All" class="text-danger"></div>
+    .order-create-panel__intro {
+        margin-bottom: 1.5rem;
+    }
 
-    <div class="row">
-        <div class="col-md-4 mb-3">
-            <label class="form-label">Cliente</label>
-            <input asp-for="CustomerName" class="form-control" />
-            <span asp-validation-for="CustomerName" class="text-danger"></span>
-        </div>
-        <div class="col-md-4 mb-3">
-            <label class="form-label">Teléfono</label>
-            <input asp-for="CustomerPhone" class="form-control" />
-            <span asp-validation-for="CustomerPhone" class="text-danger"></span>
-        </div>
-        <div class="col-md-4 mb-3">
-            <label class="form-label">Dirección</label>
-            <input asp-for="DeliveryAddress" class="form-control" />
-            <span asp-validation-for="DeliveryAddress" class="text-danger"></span>
-        </div>
+    .order-items-section {
+        padding-top: 1rem;
+    }
+
+    .order-items-toolbar {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 1rem;
+        margin-bottom: 1rem;
+        flex-wrap: wrap;
+    }
+
+    .order-items-note {
+        color: rgba(84, 84, 84, .75);
+        font-size: .92rem;
+    }
+
+    .order-add-button {
+        border-color: rgba(234, 166, 54, .8);
+        color: var(--primary);
+        background: rgba(234, 166, 54, .08);
+    }
+
+    .order-add-button:hover,
+    .order-add-button:focus {
+        color: #fff;
+        background: var(--primary);
+        border-color: var(--primary);
+    }
+
+    .order-items-head,
+    .order-item-row {
+        display: grid;
+        grid-template-columns: minmax(0, 1.85fr) minmax(140px, .6fr) 120px;
+        gap: 1.25rem;
+        align-items: start;
+    }
+
+    .order-items-head {
+        color: var(--dark);
+        font-size: .95rem;
+        font-weight: 700;
+        padding: 0 .25rem .75rem;
+    }
+
+    .order-items-list {
+        display: grid;
+        gap: 1rem;
+    }
+
+    .order-item-field {
+        min-width: 0;
+    }
+
+    .order-item-actions {
+        display: flex;
+        justify-content: flex-end;
+        padding-top: .25rem;
+    }
+
+    .order-remove-button {
+        min-width: 92px;
+    }
+
+    @@media (max-width: 991.98px) {
+        .order-create-panel {
+            padding: 1.5rem;
+        }
+
+        .order-items-head,
+        .order-item-row {
+            grid-template-columns: 1fr;
+            gap: .85rem;
+        }
+
+        .order-item-actions {
+            justify-content: flex-start;
+            padding-top: 0;
+        }
+    }
+</style>
+
+<section class="section-panel order-create-panel">
+    <div class="order-create-panel__intro">
+        <h2 class="h4 mb-1">Crear pedido</h2>
     </div>
 
-    <div class="mb-3">
-        <label class="form-label">Notas / observaciones</label>
-        <textarea asp-for="Notes" class="form-control" rows="2"></textarea>
-    </div>
+    <form method="post" class="order-create-form">
+        @Html.AntiForgeryToken()
+        @if (!ViewData.ModelState.IsValid)
+        {
+            <div asp-validation-summary="All" class="text-danger mb-4"></div>
+        }
 
-    <h3 class="h6 mt-4">Productos (hasta 5 líneas)</h3>
-    <div class="table-responsive">
-        <table class="table table-sm align-middle">
-            <thead>
-                <tr>
-                    <th style="width: 60%;">Producto</th>
-                    <th style="width: 20%;">Cantidad</th>
-                </tr>
-            </thead>
-            <tbody>
-                @for (int i = 0; i < Model.Items.Count; i++)
+        <div class="mb-4">
+            <label asp-for="RegisteredCustomerId" class="form-label">Cliente registrado (opcional)</label>
+            <select asp-for="RegisteredCustomerId" class="form-select" id="registered-customer">
+                <option value="">(Seleccionar cliente)</option>
+                @foreach (var customer in customers)
                 {
-                    <tr>
-                        <td>
-                            <select asp-for="Items[i].ProductId" class="form-select">
+                    var fullName = BuildCustomerName(customer);
+                    var fullAddress = BuildCustomerAddress(customer);
+
+                    <option value="@customer.Id"
+                            data-name="@fullName"
+                            data-phone="@customer.Telefono"
+                            data-address="@fullAddress">
+                        @fullName
+                    </option>
+                }
+            </select>
+            <div class="form-text">Si seleccionas un cliente, podemos completar sus datos principales automaticamente.</div>
+        }
+
+        <div class="row g-3">
+            <div class="col-lg-4">
+                <label asp-for="CustomerName" class="form-label">Cliente</label>
+                <input asp-for="CustomerName" class="form-control" />
+                <span asp-validation-for="CustomerName" class="text-danger"></span>
+            </div>
+            <div class="col-lg-4">
+                <label asp-for="CustomerPhone" class="form-label">Telefono</label>
+                <input asp-for="CustomerPhone" class="form-control" />
+                <span asp-validation-for="CustomerPhone" class="text-danger"></span>
+            </div>
+            <div class="col-lg-4">
+                <label asp-for="DeliveryAddress" class="form-label">Direccion</label>
+                <input asp-for="DeliveryAddress" class="form-control" />
+                <span asp-validation-for="DeliveryAddress" class="text-danger"></span>
+            </div>
+        </div>
+
+        <div class="mt-3">
+            <label asp-for="Notes" class="form-label">Notas / observaciones</label>
+            <textarea asp-for="Notes" class="form-control" rows="3"></textarea>
+        </div>
+
+        <div class="order-items-section mt-4">
+            <div class="order-items-toolbar">
+                <div>
+                    <h3 class="h6 mb-1">Productos</h3>
+                    <p class="order-items-note mb-0">Agrega productos uno por uno.</p>
+                </div>
+                <button class="btn btn-outline-primary btn-sm order-add-button" type="button" id="add-order-item">+ Agregar producto</button>
+            </div>
+
+            <div class="order-items-head d-none d-lg-grid">
+                <span>Producto</span>
+                <span>Cantidad</span>
+                <span>Accion</span>
+            </div>
+
+            <div id="order-items-list" class="order-items-list">
+                @for (var i = 0; i < Model.Items.Count; i++)
+                {
+                    <div class="order-item-row" data-index="@i">
+                        <div class="order-item-field order-item-field--product">
+                            <label class="form-label d-lg-none" for="Items_@(i)__ProductId">Producto</label>
+                            <select asp-for="Items[i].ProductId" class="form-select" data-field="product">
                                 <option value="">(Seleccione)</option>
-                                @foreach (var p in products)
+                                @foreach (var product in products)
                                 {
-                                    <option value="@p.Id">@p.Name (@p.Sku)</option>
+                                    <option value="@product.Id">@product.Name (@product.Sku)</option>
                                 }
                             </select>
-                        </td>
-                        <td>
-                            <input asp-for="Items[i].Quantity" class="form-control" />
-                        </td>
-                    </tr>
+                        </div>
+                        <div class="order-item-field order-item-field--quantity">
+                            <label class="form-label d-lg-none" for="Items_@(i)__Quantity">Cantidad</label>
+                            <input asp-for="Items[i].Quantity"
+                                   class="form-control"
+                                   data-field="quantity"
+                                   type="number"
+                                   min="0"
+                                   step="0.01"
+                                   placeholder="0.00" />
+                        </div>
+                        <div class="order-item-actions">
+                            <button class="btn btn-outline-secondary btn-sm order-remove-button" type="button">Quitar</button>
+                        </div>
+                    </div>
                 }
-            </tbody>
-        </table>
-    </div>
+            </div>
+        </div>
 
-    <button class="btn btn-primary" type="submit">Guardar</button>
-    <a class="btn btn-outline-secondary" asp-action="Index">Cancelar</a>
-</form>
+        <div class="d-flex flex-wrap gap-2 mt-4">
+            <button class="btn btn-primary" type="submit">Guardar</button>
+            <a class="btn btn-outline-secondary" asp-action="Index">Cancelar</a>
+        </div>
+    </form>
+</section>
+
+<template id="order-item-template">
+    <div class="order-item-row" data-index="__index__">
+        <div class="order-item-field order-item-field--product">
+            <label class="form-label d-lg-none" for="Items___index____ProductId">Producto</label>
+            <select name="Items[__index__].ProductId"
+                    id="Items___index____ProductId"
+                    class="form-select"
+                    data-field="product">
+                <option value="">(Seleccione)</option>
+                @foreach (var product in products)
+                {
+                    <option value="@product.Id">@product.Name (@product.Sku)</option>
+                }
+            </select>
+        </div>
+        <div class="order-item-field order-item-field--quantity">
+            <label class="form-label d-lg-none" for="Items___index____Quantity">Cantidad</label>
+            <input name="Items[__index__].Quantity"
+                   id="Items___index____Quantity"
+                   class="form-control"
+                   data-field="quantity"
+                   type="number"
+                   min="0"
+                   step="0.01"
+                   placeholder="0.00"
+                   value="0" />
+        </div>
+        <div class="order-item-actions">
+            <button class="btn btn-outline-secondary btn-sm order-remove-button" type="button">Quitar</button>
+        </div>
+    </div>
+</template>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    <script>
+        (() => {
+            const list = document.getElementById('order-items-list');
+            const template = document.getElementById('order-item-template');
+            const addButton = document.getElementById('add-order-item');
+            const registeredCustomer = document.getElementById('registered-customer');
+            const customerName = document.getElementById('CustomerName');
+            const customerPhone = document.getElementById('CustomerPhone');
+            const deliveryAddress = document.getElementById('DeliveryAddress');
+
+            if (!list || !template || !addButton) {
+                return;
+            }
+
+            const rows = () => Array.from(list.querySelectorAll('.order-item-row'));
+
+            const syncRowIndexes = () => {
+                rows().forEach((row, index) => {
+                    row.dataset.index = index;
+
+                    const product = row.querySelector('[data-field="product"]');
+                    const quantity = row.querySelector('[data-field="quantity"]');
+                    const productLabel = row.querySelector('label[for*="ProductId"]');
+                    const quantityLabel = row.querySelector('label[for*="Quantity"]');
+
+                    if (product) {
+                        product.name = `Items[${index}].ProductId`;
+                        product.id = `Items_${index}__ProductId`;
+                    }
+
+                    if (quantity) {
+                        quantity.name = `Items[${index}].Quantity`;
+                        quantity.id = `Items_${index}__Quantity`;
+                    }
+
+                    if (productLabel) {
+                        productLabel.setAttribute('for', `Items_${index}__ProductId`);
+                    }
+
+                    if (quantityLabel) {
+                        quantityLabel.setAttribute('for', `Items_${index}__Quantity`);
+                    }
+                });
+            };
+
+            const addRow = () => {
+                const index = rows().length;
+                const html = template.innerHTML.replaceAll('__index__', index.toString());
+                list.insertAdjacentHTML('beforeend', html);
+                syncRowIndexes();
+
+                const lastRow = rows().at(-1);
+                const productSelect = lastRow ? lastRow.querySelector('[data-field="product"]') : null;
+                if (productSelect) {
+                    productSelect.focus();
+                }
+            };
+
+            const clearRow = (row) => {
+                const product = row.querySelector('[data-field="product"]');
+                const quantity = row.querySelector('[data-field="quantity"]');
+
+                if (product) {
+                    product.value = '';
+                }
+
+                if (quantity) {
+                    quantity.value = '0';
+                }
+            };
+
+            addButton.addEventListener('click', addRow);
+
+            list.addEventListener('click', (event) => {
+                const removeButton = event.target.closest('.order-remove-button');
+                if (!removeButton) {
+                    return;
+                }
+
+                const row = removeButton.closest('.order-item-row');
+                if (!row) {
+                    return;
+                }
+
+                if (rows().length === 1) {
+                    clearRow(row);
+                    const product = row.querySelector('[data-field="product"]');
+                    if (product) {
+                        product.focus();
+                    }
+                    return;
+                }
+
+                row.remove();
+                syncRowIndexes();
+            });
+
+            const fillCustomerFields = (overwrite) => {
+                if (!registeredCustomer) {
+                    return;
+                }
+
+                const selected = registeredCustomer.selectedOptions[0];
+                if (!selected || !selected.value) {
+                    return;
+                }
+
+                if (customerName && (overwrite || !customerName.value.trim())) {
+                    customerName.value = selected.dataset.name || '';
+                }
+
+                if (customerPhone && (overwrite || !customerPhone.value.trim())) {
+                    customerPhone.value = selected.dataset.phone || '';
+                }
+
+                if (deliveryAddress && (overwrite || !deliveryAddress.value.trim())) {
+                    deliveryAddress.value = selected.dataset.address || '';
+                }
+            };
+
+            if (registeredCustomer) {
+                registeredCustomer.addEventListener('change', () => fillCustomerFields(true));
+                fillCustomerFields(false);
+            }
+
+            syncRowIndexes();
+        })();
+    </script>
+}

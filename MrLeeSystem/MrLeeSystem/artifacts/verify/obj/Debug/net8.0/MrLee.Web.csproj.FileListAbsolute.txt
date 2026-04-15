@@ -1,0 +1,10 @@
+C:\Users\bryan\Downloads\MrLeeSystem (1)\MrLeeSystem\MrLeeSystem\MrLeeSystem\MrLeeSystem\artifacts\verify\obj\Debug\net8.0\MrLee.Web.csproj.AssemblyReference.cache
+C:\Users\bryan\Downloads\MrLeeSystem (1)\MrLeeSystem\MrLeeSystem\MrLeeSystem\MrLeeSystem\artifacts\verify\obj\Debug\net8.0\rpswa.dswa.cache.json
+C:\Users\bryan\Downloads\MrLeeSystem (1)\MrLeeSystem\MrLeeSystem\MrLeeSystem\MrLeeSystem\artifacts\verify\obj\Debug\net8.0\MrLee.Web.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\bryan\Downloads\MrLeeSystem (1)\MrLeeSystem\MrLeeSystem\MrLeeSystem\MrLeeSystem\artifacts\verify\obj\Debug\net8.0\MrLee.Web.AssemblyInfoInputs.cache
+C:\Users\bryan\Downloads\MrLeeSystem (1)\MrLeeSystem\MrLeeSystem\MrLeeSystem\MrLeeSystem\artifacts\verify\obj\Debug\net8.0\MrLee.Web.AssemblyInfo.cs
+C:\Users\bryan\Downloads\MrLeeSystem (1)\MrLeeSystem\MrLeeSystem\MrLeeSystem\MrLeeSystem\artifacts\verify\obj\Debug\net8.0\MrLee.Web.csproj.CoreCompileInputs.cache
+C:\Users\bryan\Downloads\MrLeeSystem (1)\MrLeeSystem\MrLeeSystem\MrLeeSystem\MrLeeSystem\artifacts\verify\obj\Debug\net8.0\MrLee.Web.MvcApplicationPartsAssemblyInfo.cs
+C:\Users\bryan\Downloads\MrLeeSystem (1)\MrLeeSystem\MrLeeSystem\MrLeeSystem\MrLeeSystem\artifacts\verify\obj\Debug\net8.0\MrLee.Web.MvcApplicationPartsAssemblyInfo.cache
+C:\Users\bryan\Downloads\MrLeeSystem (1)\MrLeeSystem\MrLeeSystem\MrLeeSystem\MrLeeSystem\artifacts\verify\obj\Debug\net8.0\MrLee.Web.RazorAssemblyInfo.cache
+C:\Users\bryan\Downloads\MrLeeSystem (1)\MrLeeSystem\MrLeeSystem\MrLeeSystem\MrLeeSystem\artifacts\verify\obj\Debug\net8.0\MrLee.Web.RazorAssemblyInfo.cs

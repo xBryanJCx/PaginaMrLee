@@ -1,0 +1,112 @@
+﻿@model MrLee.Web.Models.EmpleadoFormVm
+@{
+    var esEdicion = Model.EmpleadoId.HasValue;
+    ViewData["Title"] = esEdicion ? "Editar empleado" : "Nuevo empleado";
+}
+ 
+<div class="section-panel">
+    <form asp-action="@(esEdicion ? "Editar" : "Crear")" method="post">
+        @Html.AntiForgeryToken()
+        @if (esEdicion)
+        {
+            <input type="hidden" asp-for="EmpleadoId" />
+        }
+ 
+        <div asp-validation-summary="All" class="alert alert-danger mb-4"></div>
+ 
+        <h5 class="mb-3" style="color:var(--primary);">Datos personales</h5>
+        <div class="row g-3 mb-4">
+            <div class="col-md-3">
+                <label class="form-label fw-medium">Código <span class="text-danger">*</span></label>
+                
+                <span asp-validation-for="Codigo" class="text-danger small"></span>
+            </div>
+            <div class="col-md-4">
+                <label class="form-label fw-medium">Nombre <span class="text-danger">*</span></label>
+                <input asp-for="Nombre" class="form-control" />
+                <span asp-validation-for="Nombre" class="text-danger small"></span>
+            </div>
+            <div class="col-md-5">
+                <label class="form-label fw-medium">Apellido <span class="text-danger">*</span></label>
+                <input asp-for="Apellido" class="form-control" />
+                <span asp-validation-for="Apellido" class="text-danger small"></span>
+            </div>
+            <div class="col-md-4">
+                <label class="form-label fw-medium">Identificación <span class="text-danger">*</span></label>
+                <input asp-for="Identificacion" class="form-control" placeholder="1-0000-0000" />
+                <span asp-validation-for="Identificacion" class="text-danger small"></span>
+            </div>
+            <div class="col-md-4">
+                <label class="form-label fw-medium">Correo electrónico <span class="text-danger">*</span></label>
+                <input asp-for="Email" class="form-control" type="email" />
+                <span asp-validation-for="Email" class="text-danger small"></span>
+            </div>
+            <div class="col-md-4">
+                <label class="form-label fw-medium">Teléfono <span class="text-danger">*</span></label>
+                <input asp-for="Telefono" class="form-control" placeholder="8888-0000" />
+                <span asp-validation-for="Telefono" class="text-danger small"></span>
+            </div>
+        </div>
+ 
+        <hr />
+        <h5 class="mb-3 mt-4" style="color:var(--primary);">Datos contractuales</h5>
+        <div class="row g-3 mb-4">
+            <div class="col-md-3">
+                <label class="form-label fw-medium">Fecha de ingreso <span class="text-danger">*</span></label>
+                <input asp-for="FechaIngreso" class="form-control" type="date" max="@DateTime.Today.ToString("yyyy-MM-dd")" />
+                <span asp-validation-for="FechaIngreso" class="text-danger small"></span>
+            </div>
+            <div class="col-md-3">
+                <label class="form-label fw-medium">Puesto <span class="text-danger">*</span></label>
+                <select asp-for="PuestoId" asp-items="Model.Puestos" class="form-select">
+                    <option value="0">-- Seleccione --</option>
+                </select>
+                <span asp-validation-for="PuestoId" class="text-danger small"></span>
+            </div>
+            <div class="col-md-3">
+                <label class="form-label fw-medium">Sucursal <span class="text-danger">*</span></label>
+                <select asp-for="SucursalId" asp-items="Model.Sucursales" class="form-select">
+                    <option value="0">-- Seleccione --</option>
+                </select>
+                <span asp-validation-for="SucursalId" class="text-danger small"></span>
+            </div>
+            <div class="col-md-3">
+                <label class="form-label fw-medium">Salario base <span class="text-danger">*</span></label>
+                <input asp-for="SalarioBase" class="form-control" type="number" step="0.01" min="0.01" placeholder="0.00" />
+                <span asp-validation-for="SalarioBase" class="text-danger small"></span>
+            </div>
+            <div class="col-md-4">
+                <label class="form-label fw-medium">Tipo de contrato</label>
+                <select asp-for="TipoContrato" class="form-select"
+                    asp-items="Html.GetEnumSelectList<MrLee.Web.Models.TipoContrato>()"></select>
+            </div>
+            <div class="col-md-4">
+                <label class="form-label fw-medium">Jornada</label>
+                <select asp-for="Jornada" class="form-select"
+                    asp-items="Html.GetEnumSelectList<MrLee.Web.Models.Jornada>()"></select>
+            </div>
+            <div class="col-md-4">
+                <label class="form-label fw-medium">Estado</label>
+                <select asp-for="Estado" class="form-select"
+                    asp-items="Html.GetEnumSelectList<MrLee.Web.Models.EstadoEmpleado>()"></select>
+            </div>
+        </div>
+ 
+        <div class="row g-3 mb-4">
+            <div class="col-12">
+                <label class="form-label fw-medium">Observaciones</label>
+                <textarea asp-for="Observaciones" class="form-control" rows="3" maxlength="500"></textarea>
+                <span asp-validation-for="Observaciones" class="text-danger small"></span>
+            </div>
+        </div>
+ 
+        <div class="d-flex gap-2 justify-content-end">
+            <a asp-action="Index" class="btn btn-outline-secondary">Cancelar</a>
+            <button type="submit" class="btn btn-success">💾 Guardar</button>
+        </div>
+    </form>
+</div>
+ 
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

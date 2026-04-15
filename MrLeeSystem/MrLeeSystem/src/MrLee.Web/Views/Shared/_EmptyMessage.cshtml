@@ -1,0 +1,36 @@
+@model MrLee.Web.Models.EmptyMessageVm
+@{
+    var variantClass = string.Equals(Model.Variant, "search", StringComparison.OrdinalIgnoreCase)
+        ? "empty-message empty-message--search"
+        : "empty-message";
+}
+
+<div class="@variantClass">
+    <div class="empty-message__icon" aria-hidden="true">
+        @if (string.Equals(Model.Variant, "search", StringComparison.OrdinalIgnoreCase))
+        {
+            <svg viewBox="0 0 64 64" role="img" focusable="false">
+                <path d="M18 20.5A5.5 5.5 0 0 1 23.5 15h6.7a3 3 0 0 1 2.12.88l3.8 3.8a3 3 0 0 0 2.12.87H40.5A5.5 5.5 0 0 1 46 26v13.5a5.5 5.5 0 0 1-5.5 5.5h-17A5.5 5.5 0 0 1 18 39.5z" />
+                <path d="M42.2 41.1a8.2 8.2 0 1 1 2.9-2.9l5.2 5.2a2 2 0 1 1-2.83 2.83zM31.5 36a4.5 4.5 0 1 0 0-9 4.5 4.5 0 0 0 0 9" />
+            </svg>
+        }
+        else
+        {
+            <svg viewBox="0 0 24 24" role="img" focusable="false">
+                <path d="M5 7.75A2.75 2.75 0 0 1 7.75 5h8.5A2.75 2.75 0 0 1 19 7.75v8.5A2.75 2.75 0 0 1 16.25 19h-8.5A2.75 2.75 0 0 1 5 16.25zm2.75-1.25c-.69 0-1.25.56-1.25 1.25v8.5c0 .69.56 1.25 1.25 1.25h8.5c.69 0 1.25-.56 1.25-1.25v-8.5c0-.69-.56-1.25-1.25-1.25zM8.5 9a.75.75 0 0 1 .75-.75h5.5a.75.75 0 0 1 0 1.5h-5.5A.75.75 0 0 1 8.5 9m0 3a.75.75 0 0 1 .75-.75h5.5a.75.75 0 0 1 0 1.5h-5.5A.75.75 0 0 1 8.5 12m0 3a.75.75 0 0 1 .75-.75H12a.75.75 0 0 1 0 1.5H9.25A.75.75 0 0 1 8.5 15" />
+            </svg>
+        }
+    </div>
+    <div class="empty-message__body">
+        <h3 class="empty-message__title">@Model.Title</h3>
+        <p class="empty-message__text mb-0">@Model.Message</p>
+        @if (!string.IsNullOrWhiteSpace(Model.SupportText))
+        {
+            <p class="empty-message__support mb-0">@Model.SupportText</p>
+        }
+        @if (!string.IsNullOrWhiteSpace(Model.ActionText) && !string.IsNullOrWhiteSpace(Model.ActionUrl))
+        {
+            <a href="@Model.ActionUrl" class="btn btn-primary empty-message__action">@Model.ActionText</a>
+        }
+    </div>
+</div>

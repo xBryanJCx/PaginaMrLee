@@ -1,75 +1,128 @@
 @model OperatingIncome
 @{
-    ViewData["Title"] = "Detalle de ingreso";
+    ViewData["Title"] = "Detalle del ingreso";
+
+    string GetTypeLabel(OperatingIncomeType type) => type switch
+    {
+        OperatingIncomeType.Venta => "Venta",
+        OperatingIncomeType.Cobro => "Cobro",
+        _ => "Otro"
+    };
+
+    string GetTypeClass(OperatingIncomeType type) => type switch
+    {
+        OperatingIncomeType.Venta => "income-type-chip income-type-chip--venta",
+        OperatingIncomeType.Cobro => "income-type-chip income-type-chip--cobro",
+        _ => "income-type-chip income-type-chip--otro"
+    };
 }
 
-<div class="section-panel mb-4">
-    <div class="d-flex justify-content-between align-items-start flex-wrap gap-3">
+<section class="section-panel mb-4">
+    <div class="app-detail-summary">
         <div>
-            <div class="text-uppercase text-primary fw-bold small">@Model.Number</div>
-            <h2 class="h4 mb-2">@Model.SourceName</h2>
-            <div class="text-muted">@Model.IncomeDate.ToString("dd/MM/yyyy") · @Model.Type · @Model.Category</div>
+            <div class="app-eyebrow mb-2">Ingreso registrado</div>
+            <div class="text-muted small mb-2">@Model.Number</div>
+            <h2 class="display-6 mb-3">@Model.SourceName</h2>
+            <div class="d-flex flex-wrap gap-2 mb-3">
+                <span class="@GetTypeClass(Model.Type)">@GetTypeLabel(Model.Type)</span>
+                <span class="app-status-badge @(Model.IsVoided ? "app-status-badge--voided" : "app-status-badge--active")">
+                    @(Model.IsVoided ? "Anulado" : "Activo")
+                </span>
+                <span class="app-detail-meta align-self-center">@Model.Category</span>
+            </div>
+            <div class="app-detail-meta">Fecha del ingreso: @Model.IncomeDate.ToString("dd/MM/yyyy")</div>
         </div>
-        <div class="text-end">
-            <div class="display-6">₡ @Model.Amount.ToString("N2")</div>
-            @if (Model.IsVoided)
-            {
-                <span class="badge bg-danger">Anulado</span>
-            }
-            else
-            {
-                <span class="badge bg-success">Activo</span>
-            }
+        <div class="app-detail-amount">
+            <div class="app-detail-amount__label">Monto registrado</div>
+            <div class="app-detail-amount__value">&#8353; @Model.Amount.ToString("N2")</div>
         </div>
     </div>
-</div>
+</section>
 
-<div class="row g-4">
+<section class="row g-4">
     <div class="col-lg-7">
         <div class="section-panel h-100">
-            <h3 class="h5 mb-3">Información</h3>
-            <dl class="row mb-0">
-                <dt class="col-sm-4">Referencia</dt>
-                <dd class="col-sm-8">@Model.Reference</dd>
-                <dt class="col-sm-4">Descripción</dt>
-                <dd class="col-sm-8">@Model.Description</dd>
-                <dt class="col-sm-4">Creado por</dt>
-                <dd class="col-sm-8">@Model.CreatedByEmail</dd>
-                <dt class="col-sm-4">Actualizado</dt>
-                <dd class="col-sm-8">@(Model.UpdatedAtUtc?.ToLocalTime().ToString("dd/MM/yyyy HH:mm") ?? "-")</dd>
-            </dl>
+            <h3 class="h5 mb-4">Informacion general</h3>
+            <div class="app-data-list">
+                <div class="app-data-list__row">
+                    <div class="app-data-list__label">Categoria</div>
+                    <div class="app-data-list__value">@Model.Category</div>
+                </div>
+                <div class="app-data-list__row">
+                    <div class="app-data-list__label">Referencia</div>
+                    <div class="app-data-list__value">@(string.IsNullOrWhiteSpace(Model.Reference) ? "Sin referencia" : Model.Reference)</div>
+                </div>
+                <div class="app-data-list__row">
+                    <div class="app-data-list__label">Descripcion</div>
+                    <div class="app-data-list__value">@(string.IsNullOrWhiteSpace(Model.Description) ? "Sin descripcion registrada." : Model.Description)</div>
+                </div>
+                <div class="app-data-list__row">
+                    <div class="app-data-list__label">Creado el</div>
+                    <div class="app-data-list__value">@Model.CreatedAtUtc.ToLocalTime().ToString("dd/MM/yyyy HH:mm")</div>
+                </div>
+                <div class="app-data-list__row">
+                    <div class="app-data-list__label">Creado por</div>
+                    <div class="app-data-list__value">@Model.CreatedByEmail</div>
+                </div>
+                <div class="app-data-list__row">
+                    <div class="app-data-list__label">Actualizado</div>
+                    <div class="app-data-list__value">@(Model.UpdatedAtUtc?.ToLocalTime().ToString("dd/MM/yyyy HH:mm") ?? "Sin actualizaciones")</div>
+                </div>
+            </div>
         </div>
     </div>
     <div class="col-lg-5">
         <div class="section-panel h-100">
-            <h3 class="h5 mb-3">Comprobantes</h3>
+            <h3 class="h5 mb-4">Comprobantes</h3>
             @if (Model.Attachments.Any())
             {
-                <ul class="mb-0 ps-3">
+                <div class="app-data-list">
                     @foreach (var file in Model.Attachments.OrderByDescending(x => x.CreatedAtUtc))
                     {
-                        <li><a href="@file.RelativePath" target="_blank">@file.OriginalFileName</a></li>
+                        <div class="app-data-list__row">
+                            <div class="app-data-list__label">@file.OriginalFileName</div>
+                            <div class="app-data-list__value">
+                                <a href="@file.RelativePath" target="_blank" rel="noreferrer">Abrir archivo</a>
+                                <span class="text-muted">(@(Math.Round(file.SizeBytes / 1024m, 1)) KB)</span>
+                            </div>
+                        </div>
                     }
-                </ul>
+                </div>
             }
             else
             {
-                <div class="text-muted">No hay comprobantes adjuntos.</div>
+                <partial name="_EmptyMessage" model='new EmptyMessageVm
+                {
+                    Title = "Sin comprobantes adjuntos.",
+                    Message = "Este ingreso todavia no tiene archivos de respaldo asociados."
+                }' />
             }
         </div>
     </div>
-</div>
+</section>
 
-<div class="mt-4 d-flex gap-2 flex-wrap">
-    <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-primary">Editar</a>
-    <a asp-action="Trace" asp-route-id="@Model.Id" class="btn btn-outline-dark">Ver trazabilidad</a>
-    @if (!Model.IsVoided)
-    {
-        <form asp-action="Void" asp-route-id="@Model.Id" method="post" class="d-inline-flex gap-2">
-            @Html.AntiForgeryToken()
-            <input type="text" name="reason" class="form-control" placeholder="Motivo de anulación" />
-            <button class="btn btn-outline-danger">Anular</button>
-        </form>
-    }
-    <a asp-action="Index" class="btn btn-outline-secondary">Volver</a>
-</div>
+<section class="section-panel mt-4">
+    <div class="app-split-actions">
+        <div class="app-action-group">
+            <a asp-action="Index" class="btn btn-outline-secondary">Volver al listado</a>
+            <a asp-action="Trace" asp-route-id="@Model.Id" class="btn btn-outline-dark">Ver trazabilidad</a>
+        </div>
+        <div class="app-action-group app-action-group--right">
+            <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-primary">Editar ingreso</a>
+            @if (!Model.IsVoided)
+            {
+                <form asp-action="Void"
+                      asp-route-id="@Model.Id"
+                      method="post"
+                      class="m-0 js-confirm-form"
+                      data-confirm-title="&#191;Confirmar anulaci&oacute;n?"
+                      data-confirm-message="&#191;Deseas anular este registro?"
+                      data-confirm-button="Anular"
+                      data-confirm-button-class="btn-app-warning">
+                    @Html.AntiForgeryToken()
+                    <button class="btn btn-app-soft-danger" type="submit">Anular</button>
+                </form>
+            }
+        </div>
+    </div>
+</section>

@@ -42,8 +42,11 @@ public class OrdersController : Controller
     [Authorize(Policy = PermissionCatalog.ORD_MANAGE)]
     public async Task<IActionResult> Create()
     {
-        ViewBag.Products = await _db.Products.Where(p => p.IsActive).OrderBy(p => p.Name).ToListAsync();
-        return View(new OrderCreateVm());
+        await PopulateCreateLookupsAsync();
+
+        var vm = new OrderCreateVm();
+        EnsureAtLeastOneItem(vm);
+        return View(vm);
     }
 
     [HttpPost]
@@ -51,7 +54,10 @@ public class OrdersController : Controller
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Create(OrderCreateVm vm)
     {
-        ViewBag.Products = await _db.Products.Where(p => p.IsActive).OrderBy(p => p.Name).ToListAsync();
+        await PopulateCreateLookupsAsync();
+        EnsureAtLeastOneItem(vm);
+        await AutofillSelectedCustomerAsync(vm);
+
         if (!ModelState.IsValid) return View(vm);
 
         var tracking = await _orders.GenerateTrackingNumberAsync();
@@ -153,10 +159,87 @@ public class OrdersController : Controller
 
         return RedirectToAction(nameof(Index));
     }
+
+    private async Task PopulateCreateLookupsAsync()
+    {
+        ViewBag.Products = await _db.Products
+            .AsNoTracking()
+            .Where(p => p.IsActive)
+            .OrderBy(p => p.Name)
+            .ToListAsync();
+
+        ViewBag.Customers = await _db.Clientes
+            .AsNoTracking()
+            .Include(c => c.Direcciones)
+            .Where(c => c.IsActive && !c.DadoDeBaja)
+            .OrderBy(c => c.Nombre)
+            .ThenBy(c => c.Apellido)
+            .ToListAsync();
+    }
+
+    private async Task AutofillSelectedCustomerAsync(OrderCreateVm vm)
+    {
+        if (!vm.RegisteredCustomerId.HasValue)
+            return;
+
+        var customer = await _db.Clientes
+            .AsNoTracking()
+            .Include(c => c.Direcciones)
+            .FirstOrDefaultAsync(c => c.Id == vm.RegisteredCustomerId.Value && c.IsActive && !c.DadoDeBaja);
+
+        if (customer == null)
+            return;
+
+        if (string.IsNullOrWhiteSpace(vm.CustomerName))
+            vm.CustomerName = BuildCustomerFullName(customer);
+
+        if (string.IsNullOrWhiteSpace(vm.CustomerPhone))
+            vm.CustomerPhone = customer.Telefono.Trim();
+
+        if (string.IsNullOrWhiteSpace(vm.DeliveryAddress))
+            vm.DeliveryAddress = BuildCustomerPrimaryAddress(customer);
+
+        ModelState.Remove(nameof(OrderCreateVm.CustomerName));
+        ModelState.Remove(nameof(OrderCreateVm.CustomerPhone));
+        ModelState.Remove(nameof(OrderCreateVm.DeliveryAddress));
+        TryValidateModel(vm);
+    }
+
+    private static void EnsureAtLeastOneItem(OrderCreateVm vm)
+    {
+        vm.Items ??= new List<OrderLineVm>();
+
+        if (vm.Items.Count == 0)
+            vm.Items.Add(new OrderLineVm());
+    }
+
+    private static string BuildCustomerFullName(Cliente customer) =>
+        $"{customer.Nombre} {customer.Apellido}".Trim();
+
+    private static string BuildCustomerPrimaryAddress(Cliente customer)
+    {
+        var address = customer.Direcciones.FirstOrDefault(d => d.EsPrincipal)
+            ?? customer.Direcciones.FirstOrDefault();
+
+        if (address == null)
+            return string.Empty;
+
+        var parts = new[]
+        {
+            address.Direccion,
+            address.Distrito,
+            address.Canton,
+            address.Provincia
+        };
+
+        return string.Join(", ", parts.Where(part => !string.IsNullOrWhiteSpace(part)).Select(part => part.Trim()));
+    }
 }
 
 public class OrderCreateVm
 {
+    public int? RegisteredCustomerId { get; set; }
+
     [Required]
     public string CustomerName { get; set; } = "";
 
@@ -168,10 +251,9 @@ public class OrderCreateVm
 
     public string? Notes { get; set; }
 
-    // 5 lines to keep the UI simple (can be extended)
     public List<OrderLineVm> Items { get; set; } = new()
     {
-        new OrderLineVm(), new OrderLineVm(), new OrderLineVm(), new OrderLineVm(), new OrderLineVm()
+        new OrderLineVm()
     };
 }
 
